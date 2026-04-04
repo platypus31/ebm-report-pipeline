@@ -135,11 +135,19 @@ def main():
         print(f"錯誤：找不到 PICO 檔案 '{pico_path}'。", file=sys.stderr)
         sys.exit(1)
 
-    if yaml:
-        with open(pico_path, encoding="utf-8") as f:
-            pico_data = yaml.safe_load(f)
-    else:
-        pico_data = parse_yaml_simple(pico_path)
+    try:
+        if yaml:
+            with open(pico_path, encoding="utf-8") as f:
+                pico_data = yaml.safe_load(f)
+        else:
+            pico_data = parse_yaml_simple(pico_path)
+    except Exception as e:
+        print(f"錯誤：無法讀取 PICO 檔案 '{pico_path}'。{e}", file=sys.stderr)
+        sys.exit(1)
+
+    if not isinstance(pico_data, dict):
+        print("錯誤：PICO 檔案格式不正確（預期為 YAML 物件）。", file=sys.stderr)
+        sys.exit(1)
 
     query = build_query(pico_data, args.type)
 

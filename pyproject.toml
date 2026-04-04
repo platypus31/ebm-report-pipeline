@@ -1,0 +1,27 @@
+[project]
+name = "ebm-report-pipeline"
+version = "1.0.0"
+description = "PGY 住院醫師 EBM 報告互動式產生工具"
+requires-python = ">=3.9"
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+pptx = ["python-pptx>=0.6.21"]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.4",
+]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

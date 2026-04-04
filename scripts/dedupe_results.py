@@ -23,21 +23,35 @@ from pathlib import Path
 
 
 def normalize_title(title: str) -> str:
-    """Normalize title for fuzzy matching."""
+    """Normalize title for fuzzy matching (supports CJK characters)."""
     t = title.lower().strip()
-    t = re.sub(r"[^a-z0-9\s]", "", t)
+    # Keep alphanumeric, CJK unified ideographs, and whitespace
+    t = re.sub(r"[^\w\s\u4e00-\u9fff\u3400-\u4dbf]", "", t)
     t = re.sub(r"\s+", " ", t)
     return t
 
 
+def _tokenize(text: str) -> set[str]:
+    """Tokenize text into words + character bigrams for CJK support."""
+    normalized = normalize_title(text)
+    # Word-level tokens (works for English)
+    tokens = set(normalized.split())
+    # Character bigrams for CJK text (no spaces between words)
+    cjk_chars = re.findall(r"[\u4e00-\u9fff\u3400-\u4dbf]", normalized)
+    if cjk_chars:
+        for i in range(len(cjk_chars) - 1):
+            tokens.add(cjk_chars[i] + cjk_chars[i + 1])
+    return tokens
+
+
 def title_similarity(a: str, b: str) -> float:
-    """Simple word-overlap similarity (Jaccard)."""
-    words_a = set(normalize_title(a).split())
-    words_b = set(normalize_title(b).split())
-    if not words_a or not words_b:
+    """Word-overlap + CJK bigram similarity (Jaccard)."""
+    tokens_a = _tokenize(a)
+    tokens_b = _tokenize(b)
+    if not tokens_a or not tokens_b:
         return 0.0
-    intersection = words_a & words_b
-    union = words_a | words_b
+    intersection = tokens_a & tokens_b
+    union = tokens_a | tokens_b
     return len(intersection) / len(union)
 
 
@@ -132,10 +146,14 @@ def main():
         sys.exit(1)
 
     # Read CSV
-    with open(input_path, encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        rows = list(reader)
-        fieldnames = reader.fieldnames or []
+    try:
+        with open(input_path, encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            rows = list(reader)
+            fieldnames = reader.fieldnames or []
+    except (UnicodeDecodeError, csv.Error) as e:
+        print(f"錯誤：無法讀取 CSV 檔案 '{input_path}'。{e}", file=sys.stderr)
+        sys.exit(1)
 
     if not rows:
         print("輸入檔案為空，無需去重。")

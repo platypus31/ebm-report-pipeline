@@ -117,12 +117,30 @@ def build_slides(project: Path, style: str, author: str) -> dict:
         if bullets:
             slides.append({"type": "content", "title": "��景資訊", "bullets": bullets[:5], "section": "ASK"})
 
-    # PICO
+    # PICO — parse YAML to extract P/I/C/O zh fields
     pico_bullets = []
-    for elem, label in [("p", "P"), ("i", "I"), ("c", "C")]:
-        zh = extract_yaml_field(pico_content, f"    zh")  # simplified
-        if zh:
-            pico_bullets.append(f"{label}: {zh}")
+    try:
+        from scripts.utils import read_yaml
+        pico_data = read_yaml(ask_dir / "pico.yaml")
+        pico_section = pico_data.get("pico", {})
+        for elem, label in [("p", "P"), ("i", "I"), ("c", "C")]:
+            elem_data = pico_section.get(elem, {})
+            if isinstance(elem_data, dict):
+                zh = elem_data.get("zh", "")
+                if zh:
+                    pico_bullets.append(f"{label}: {zh}")
+        # Outcome (nested primary/secondary)
+        o_data = pico_section.get("o", {})
+        if isinstance(o_data, dict):
+            primary = o_data.get("primary", o_data)
+            if isinstance(primary, dict):
+                zh = primary.get("zh", "")
+            else:
+                zh = o_data.get("zh", "")
+            if zh:
+                pico_bullets.append(f"O: {zh}")
+    except Exception:
+        pass
     if not pico_bullets:
         # Fallback: extract from raw content
         for line in pico_content.split("\n"):
@@ -209,7 +227,6 @@ def build_slides(project: Path, style: str, author: str) -> dict:
         section = row.get("section", "")
         q_zh = row.get("question_zh", row.get("question", ""))
         answer = row.get("answer", "")
-        analysis = row.get("analysis", "")
 
         if section != current_section:
             current_section = section
@@ -284,7 +301,6 @@ def build_slides(project: Path, style: str, author: str) -> dict:
     if reply:
         # Extract the dialogue part
         bullets = []
-        in_quote = False
         for line in reply.split("\n"):
             s = line.strip()
             if s.startswith(">"):

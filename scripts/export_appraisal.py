@@ -58,7 +58,7 @@ def export_csv(data: dict, output_path: Path) -> None:
     print(f"  Yes: {yes_count} | No: {no_count} | Can't tell: {ct_count}")
 
     if ct_count > 2:
-        print(f"  ⚠ 警告：Can't tell 超過 2 題，報告品質可能不足。")
+        print("  ⚠ 警告：Can't tell 超過 2 題，報告品質可能不足。")
 
 
 def export_coi_md(data: dict, output_path: Path) -> None:
@@ -91,9 +91,19 @@ def main():
     base_dir = Path(__file__).resolve().parent.parent
 
     if args.project:
-        input_path = base_dir / "projects" / args.project / "03_appraise" / "appraisal.json"
-        csv_output = base_dir / "projects" / args.project / "03_appraise" / "appraisal.csv"
-        coi_output = base_dir / "projects" / args.project / "03_appraise" / "coi_check.md"
+        appraise_dir = base_dir / "projects" / args.project / "03_appraise"
+        # Prefer appraisal.json if it exists; fall back to appraisal.csv
+        json_path = appraise_dir / "appraisal.json"
+        csv_existing = appraise_dir / "appraisal.csv"
+        if json_path.exists():
+            input_path = json_path
+        elif csv_existing.exists():
+            print(f"appraisal.csv 已存在於 {csv_existing}，無需從 JSON 匯出。")
+            sys.exit(0)
+        else:
+            input_path = json_path  # will fail with a clear error below
+        csv_output = appraise_dir / "appraisal.csv"
+        coi_output = appraise_dir / "coi_check.md"
     elif args.input:
         input_path = Path(args.input)
         csv_output = Path(args.output) if args.output else input_path.with_suffix(".csv")
@@ -111,6 +121,10 @@ def main():
             data = json.load(f)
     except json.JSONDecodeError as e:
         print(f"錯誤：JSON 格式不正確。{e}", file=sys.stderr)
+        sys.exit(1)
+
+    if not isinstance(data, dict):
+        print("錯誤：JSON 內容必須是物件（字典），不是陣列或純值。", file=sys.stderr)
         sys.exit(1)
 
     export_csv(data, csv_output)

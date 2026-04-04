@@ -197,10 +197,10 @@ def main():
     print(f"通過：{total_pass} 項 | 缺少：{total_fail} 項")
 
     if total_fail > 0:
-        print(f"\n提示：使用 /ebm 繼續完成缺少的步驟。")
+        print("\n提示：使用 /ebm 繼續完成缺少的步驟。")
         sys.exit(1)
     else:
-        print(f"\n所有必要產出已完成，可以產生簡報！")
+        print("\n所有必要產出已完成，可以產生簡報！")
         sys.exit(0)
 
 

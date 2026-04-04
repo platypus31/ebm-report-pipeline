@@ -57,10 +57,10 @@ from pathlib import Path
 
 try:
     from pptx import Presentation
-    from pptx.util import Inches, Pt, Emu
     from pptx.dml.color import RGBColor
-    from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
     from pptx.enum.shapes import MSO_SHAPE
+    from pptx.enum.text import PP_ALIGN
+    from pptx.util import Emu, Inches, Pt
 except ImportError:
     print("錯誤：缺少 python-pptx 套件。請執行 pip install python-pptx 安裝。", file=sys.stderr)
     sys.exit(1)
@@ -220,18 +220,8 @@ def create_section_slide(prs, slide_data, style_colors):
         p2.alignment = PP_ALIGN.CENTER
 
 
-def create_content_slide(prs, slide_data, style_colors):
-    """Create standard content slide with bullets."""
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
-
-    section = slide_data.get("section")
-    content_left = Inches(1.6) if section else Inches(0.8)
-
-    # Section indicator
-    if section:
-        add_section_indicator(slide, section, style_colors)
-
-    # Title bar
+def _add_title_bar(slide, title, content_left, style_colors):
+    """Add a title bar rectangle and title text to a slide."""
     shape = slide.shapes.add_shape(
         MSO_SHAPE.RECTANGLE,
         Inches(0), Inches(0), Inches(10), Inches(0.9)
@@ -243,10 +233,24 @@ def create_content_slide(prs, slide_data, style_colors):
     txBox = slide.shapes.add_textbox(content_left, Inches(0.12), Inches(8), Inches(0.7))
     tf = txBox.text_frame
     p = tf.paragraphs[0]
-    p.text = slide_data.get("title", "")
+    p.text = title
     p.font.size = Pt(24)
     p.font.bold = True
     p.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+
+
+def create_content_slide(prs, slide_data, style_colors):
+    """Create standard content slide with bullets."""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+
+    section = slide_data.get("section")
+    content_left = Inches(1.6) if section else Inches(0.8)
+
+    # Section indicator
+    if section:
+        add_section_indicator(slide, section, style_colors)
+
+    _add_title_bar(slide, slide_data.get("title", ""), content_left, style_colors)
 
     # Bullets
     bullets = slide_data.get("bullets", [])
@@ -277,22 +281,7 @@ def create_two_column_slide(prs, slide_data, style_colors):
     if section:
         add_section_indicator(slide, section, style_colors)
 
-    # Title bar
-    shape = slide.shapes.add_shape(
-        MSO_SHAPE.RECTANGLE,
-        Inches(0), Inches(0), Inches(10), Inches(0.9)
-    )
-    shape.fill.solid()
-    shape.fill.fore_color.rgb = style_colors["primary"]
-    shape.line.fill.background()
-
-    txBox = slide.shapes.add_textbox(content_left, Inches(0.12), Inches(8), Inches(0.7))
-    tf = txBox.text_frame
-    p = tf.paragraphs[0]
-    p.text = slide_data.get("title", "")
-    p.font.size = Pt(24)
-    p.font.bold = True
-    p.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+    _add_title_bar(slide, slide_data.get("title", ""), content_left, style_colors)
 
     col_width = Inches(3.8) if section else Inches(4.2)
 
@@ -340,22 +329,7 @@ def create_table_slide(prs, slide_data, style_colors):
     if section:
         add_section_indicator(slide, section, style_colors)
 
-    # Title bar
-    shape = slide.shapes.add_shape(
-        MSO_SHAPE.RECTANGLE,
-        Inches(0), Inches(0), Inches(10), Inches(0.9)
-    )
-    shape.fill.solid()
-    shape.fill.fore_color.rgb = style_colors["primary"]
-    shape.line.fill.background()
-
-    txBox = slide.shapes.add_textbox(content_left, Inches(0.12), Inches(8), Inches(0.7))
-    tf = txBox.text_frame
-    p = tf.paragraphs[0]
-    p.text = slide_data.get("title", "")
-    p.font.size = Pt(24)
-    p.font.bold = True
-    p.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+    _add_title_bar(slide, slide_data.get("title", ""), content_left, style_colors)
 
     headers = slide_data.get("headers", [])
     rows_data = slide_data.get("rows", [])
@@ -451,15 +425,18 @@ def generate_pptx(data, output_path):
     prs.slide_width = Inches(10)
     prs.slide_height = Inches(7.5)
 
-    # Create title slide from metadata
-    create_title_slide(prs, data, style_colors)
+    # Create title slide from metadata (unless slides array starts with a title slide)
+    slides_list = data.get("slides", [])
+    first_is_title = slides_list and slides_list[0].get("type") == "title"
+    if not first_is_title:
+        create_title_slide(prs, data, style_colors)
 
     # Create slides
-    for slide_data in data.get("slides", []):
+    for slide_data in slides_list:
         slide_type = slide_data.get("type", "content")
 
         if slide_type == "title":
-            create_title_slide(prs, slide_data, style_colors)
+            create_title_slide(prs, {**data, **slide_data}, style_colors)
         elif slide_type == "section":
             create_section_slide(prs, slide_data, style_colors)
         elif slide_type == "content":
@@ -472,7 +449,7 @@ def generate_pptx(data, output_path):
             create_content_slide(prs, slide_data, style_colors)
 
     prs.save(output_path)
-    print(f"PowerPoint saved: {output_path}")
+    print(f"PowerPoint 已儲存：{output_path}")
 
 
 def main():
