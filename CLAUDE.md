@@ -59,6 +59,8 @@ ebm-report-pipeline/
 │   ├── lit-search.md          # /lit-search 文獻搜尋
 │   ├── appraise.md            # /appraise 嚴格評讀
 │   └── ebm-slides.md         # /ebm-slides 簡報
+├── scripts/
+│   └── generate_pptx.py       # python-pptx fallback 簡報產生器
 └── data/
     ├── departments.md         # 科別 MeSH 對照表
     ├── study-type-hierarchy.md # 證據層級
