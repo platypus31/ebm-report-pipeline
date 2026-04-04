@@ -55,3 +55,40 @@ triggers:
 - 所有使用者互動用**繁體中文**
 - PubMed 搜尋用**英文** MeSH terms
 - 臨床意義的摘要要站在 PGY 的角度，說明為什麼這題適合做 EBM
+
+## 範例輸出
+
+### 好的範例
+
+```
+══════════════════════════════════════════
+  近一個月 腎臟內科 熱門文獻
+══════════════════════════════════════════
+
+1. Finerenone in Patients with CKD and Type 2 Diabetes: Updated FIDELITY Pooled Analysis
+   期刊: NEJM | 發表日: 2026-03-15 | 研究類型: RCT 彙總分析
+   臨床意義: SGLT2i 之後，finerenone 可能成為 DKD 的第二道防線，與 PGY 查房常見的糖尿病腎病變直接相關
+   PMID: 39012345
+
+2. Dapagliflozin vs Empagliflozin in Advanced CKD (eGFR 15-25): HEAD-TO-HEAD Trial
+   期刊: Lancet | 發表日: 2026-03-22 | 研究類型: RCT
+   臨床意義: 首次 SGLT2i 之間的頭對頭比較，可回答臨床上「選哪一顆」的實際問題
+   PMID: 39012456
+
+3. GLP-1 Receptor Agonists and Kidney Outcomes: A Systematic Review and Meta-Analysis
+   期刊: JASN | 發表日: 2026-03-10 | 研究類型: SR/MA
+   臨床意義: GLP-1 RA 在腎臟保護的證據逐漸增加，適合做跨藥物比較的 EBM 報告
+   PMID: 39013567
+
+══════════════════════════════════════════
+請選擇一個主題（輸入編號），或描述你自己的主題：
+```
+
+### 應避免的範例
+
+```
+1. A study about kidney disease
+   期刊: 某期刊 | 研究類型: 不確定
+   臨床意義: 可能有用
+```
+問題：標題不完整、期刊不明、研究類型模糊、臨床意義太空泛，無法幫助使用者判斷是否適合做 EBM 報告。

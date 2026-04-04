@@ -149,8 +149,68 @@ Identification: N 篇 → Screening: N 篇 → Eligibility: N 篇 → Included: 
 請選擇 1-3 篇文獻作為 EBM 報告的主要依據：
 ```
 
+## 資料庫搜尋 Fallback 規則
+
+各資料庫搜尋失敗時，依照以下順序自動 fallback：
+
+### Cochrane Library
+1. Playwright 瀏覽器自動搜尋（首選）
+2. 如果 Playwright 失敗 → WebFetch 取得 Cochrane 網頁內容
+3. 如果 WebFetch 失敗 → PubMed 搜尋 Cochrane 期刊：`[PICO terms] AND "Cochrane Database Syst Rev"[Journal]`
+
+### Embase
+- 僅展示搜尋策略（Emtree terms + 布林邏輯），附說明：需機構訂閱方可執行
+- 不嘗試自動搜尋
+
+### ClinicalTrials.gov
+1. Clinical Trials MCP `search_trials`（首選）
+2. 如果 MCP 失敗 → WebFetch 搜尋 `https://clinicaltrials.gov/search?cond=[P]&intr=[I]`
+
+每次 fallback 時，明確告知使用者：「[資料庫] 的 [首選方法] 無法使用，已自動切換到 [備用方法]。」
+
 ## 注意事項
 - 搜尋策略要透明，讓使用者看到完整搜尋式
 - 即使某些資料庫無法實際搜尋（如 Embase），也要展示搜尋策略以符合 5A 教學要求
 - Cochrane Playwright 失敗要 gracefully fallback
 - 如果某個搜尋完全無結果，說明原因並建議調整 PICO
+
+## 範例輸出
+
+### 好的搜尋策略範例
+
+```
+══════════════════════════════════════════
+  ACQUIRE — 文獻搜尋結果
+══════════════════════════════════════════
+
+【搜尋策略】
+PubMed:
+  ("Diabetes Mellitus, Type 2"[MeSH] OR "type 2 diabetes" OR "T2DM")
+  AND ("Sodium-Glucose Transporter 2 Inhibitors"[MeSH] OR "SGLT2 inhibitor" OR "dapagliflozin" OR "empagliflozin")
+  AND ("Placebos"[MeSH] OR "placebo" OR "standard care")
+  AND ("Glomerular Filtration Rate"[MeSH] OR "eGFR" OR "renal progression" OR "kidney failure")
+  AND (Randomized Controlled Trial[pt] OR Meta-Analysis[pt] OR Systematic Review[pt])
+
+Cochrane: SGLT2 inhibitor AND chronic kidney disease AND diabetes
+篩選: Publication type = RCT, SR, MA | 時間 = 2020-2026
+
+【6S 搜尋結果摘要】
+- UpToDate: 有 "SGLT2 inhibitors and diabetic kidney disease" 專題，建議作為一線治療
+- DynaMed: 有相關摘要，更新至 2026-02
+- Cochrane: 2 篇 systematic review（PMID: 38901234, 39012345）
+- PubMed: 18 篇（移除重複後 15 篇）
+- Embase: 搜尋策略已建構（需機構帳號執行）
+
+【PRISMA 篩選】
+Identification: 20 篇 → Screening: 15 篇（移除 5 篇重複）→ Eligibility: 8 篇（排除 7 篇：3 篇非 RCT、2 篇 PICO 不符、2 篇無全文）→ Included: 3 篇
+
+【收納文獻比較表】
+ #  | 標題                                  | 期刊   | 年份 | 研究類型 | 樣本數 | 符合PICO | 全文 | PMID
+----|---------------------------------------|--------|------|---------|--------|---------|------|----------
+ 1  | DAPA-CKD: Dapagliflozin in CKD...    | NEJM   | 2024 | RCT     | 4304   | 完全符合 | 有   | 38901234
+ 2  | EMPA-KIDNEY: Empagliflozin in CKD... | Lancet | 2023 | RCT     | 6609   | 完全符合 | 有   | 38901235
+ 3  | SGLT2i in DKD: A Systematic Review   | JASN   | 2025 | SR/MA   | N/A    | 完全符合 | 有   | 39012345
+
+══════════════════════════════════════════
+請選擇 1-3 篇文獻作為 EBM 報告的主要依據：
+```

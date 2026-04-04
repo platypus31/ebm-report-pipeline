@@ -13,6 +13,8 @@ PGY 住院醫師的 EBM (Evidence-Based Medicine) 報告互動式產生工具。
 | `/lit-search` | `skills/lit-search.md` | 6S 階層文獻搜尋（PubMed + Cochrane + Embase） |
 | `/appraise` | `skills/appraise.md` | 嚴格評讀（CASP / RoB 2 / AMSTAR 2） |
 | `/ebm-slides` | `skills/ebm-slides.md` | 產生 EBM 簡報（Canva） |
+| `/save-progress` | `skills/save-progress.md` | 儲存目前 EBM 報告進度 |
+| `/load-progress` | `skills/load-progress.md` | 載入已儲存的進度並繼續 |
 
 ## 使用方式
 
@@ -58,14 +60,18 @@ ebm-report-pipeline/
 │   ├── classify.md            # /classify 問題分類
 │   ├── lit-search.md          # /lit-search 文獻搜尋
 │   ├── appraise.md            # /appraise 嚴格評讀
-│   └── ebm-slides.md         # /ebm-slides 簡報
+│   ├── ebm-slides.md          # /ebm-slides 簡報
+│   ├── save-progress.md       # /save-progress 儲存進度
+│   └── load-progress.md       # /load-progress 載入進度
 ├── scripts/
 │   └── generate_pptx.py       # python-pptx fallback 簡報產生器
+├── output/                    # 進度儲存與簡報輸出目錄
 └── data/
     ├── departments.md         # 科別 MeSH 對照表
     ├── study-type-hierarchy.md # 證據層級
     ├── appraisal-tools.md     # 評讀工具對照表 (CASP/AMSTAR/CEBM)
     ├── ebm-slide-template.md  # 簡報結構範本 (5A)
+    ├── progress-schema.md     # 進度檔案 JSON schema
     └── templates/             # 簡報設計模板
         ├── style-a-formal.md      # 正式學術風格
         ├── style-b-clean.md       # 簡潔現代風格

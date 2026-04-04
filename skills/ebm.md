@@ -13,6 +13,17 @@ triggers:
 
 ---
 
+## Step 0 — 檢查是否有已儲存的進度
+
+在開始前，先檢查 `output/` 目錄是否有 `ebm-*.json` 進度檔案。
+
+- **有進度檔案** → 執行 `skills/load-progress.md` 的流程，列出已儲存的進度供選擇
+  - 使用者選擇載入 → 從上次的 `current_step` 繼續
+  - 使用者選擇不載入 → 開始新報告，進入 Step 1
+- **無進度檔案** → 直接進入 Step 1
+
+---
+
 ## Step 1 — 選擇科別
 
 讀取 `data/departments.md`，列出所有科別供使用者選擇。
@@ -70,6 +81,10 @@ triggers:
 - 載入 `data/study-type-hierarchy.md` 的對應證據層級
 - 確認分類結果
 
+### 自動儲存 — ASK 完成
+
+ASK 階段（Step 4-7）全部完成後，自動執行 `skills/save-progress.md` 儲存進度，`current_step` 設為 "ACQUIRE"。
+
 ---
 
 ## ═══ ACQUIRE 檢索 ═══
@@ -97,6 +112,10 @@ triggers:
 - 研究類型符合最佳證據（依問題類型）
 - 期刊品質
 - 向使用者確認選文
+
+### 自動儲存 — ACQUIRE 完成
+
+ACQUIRE 階段（Step 8-9）全部完成後，自動執行 `skills/save-progress.md` 儲存進度，`current_step` 設為 "APPRAISE"。
 
 ---
 
@@ -130,6 +149,10 @@ triggers:
   - 關鍵數據（HR, OR, RR, NNT, CI, p-value, sensitivity/specificity, LR）
   - 重要圖表（Forest Plot, Kaplan-Meier 等）
 - 選擇性加入 GRADE 評定
+
+### 自動儲存 — APPRAISE 完成
+
+APPRAISE 階段（Step 10-12）全部完成後，自動執行 `skills/save-progress.md` 儲存進度，`current_step` 設為 "APPLY"。
 
 ---
 
@@ -168,6 +191,10 @@ triggers:
 3. **搜尋技巧**：布林邏輯、MeSH term、limiters 使用？
 4. **應用到臨床**：是否應用證據？能否向病人解釋？
 5. **改變醫療行為**：是否改變決策？花費時間？
+
+### 自動儲存 — APPLY + AUDIT 完成
+
+AUDIT 階段（Step 16）完成後，自動執行 `skills/save-progress.md` 儲存進度，`current_step` 設為 "SLIDES"。
 
 ---
 

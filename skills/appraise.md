@@ -121,8 +121,64 @@ OCEBM Level of Evidence: [Level 1-5]
 - 依據五個降級因素評估
 - 給出最終等級：High / Moderate / Low / Very Low
 
+## 額外檢核規則
+
+### Can't tell 過多警告
+- 如果逐題評讀過程中累計超過 2 題判定為 "Can't tell" → 顯示警告：
+  「本文獻有 [N] 題無法判定，顯示報告品質可能不足。建議考慮：(1) 尋找同主題但報告更完整的替代文獻；(2) 在評讀結論中明確標註報告不足的面向；(3) 降低對此文獻結論的信心程度。」
+- 將此警告納入最終評讀總結
+
+### 利益衝突 (COI) 檢核
+每篇文獻必須檢查以下項目，不可省略：
+1. **經費來源 (Funding source)**: 是否由藥廠或利益相關者資助？
+2. **作者隸屬 (Author affiliations)**: 是否有作者任職於藥廠或擔任顧問？
+3. **利益揭露 (Disclosures)**: 文獻中是否有完整的利益揭露聲明？
+4. **判定**: 無 COI / 有 COI 但已適當揭露 / 有 COI 且可能影響結果解讀
+
+### Spin 檢查（結論美化偵測）
+檢查文獻是否有以下「spin」現象：
+- 結論強調次要結局而非（不顯著的）主要結局
+- 使用「趨勢 (trend)」等語言描述未達統計顯著的結果
+- 摘要結論比實際數據更正面
+- 選擇性報告有利的亞群分析
+- 如果偵測到 spin → 在評讀結論中明確指出，並引用具體段落佐證
+
 ## 注意事項
 - 評讀是 EBM 報告最重要的段落（約佔 35%），需要最詳細
 - 每題都要引用文獻原文作為佐證
 - 避免只給結論不給理由
 - 如果文獻資訊不足以判斷某題，標記為 Can't tell 並說明原因
+
+## 範例輸出
+
+### 好的 CASP 評讀範例（單題）
+
+```
+Q2: Was the assignment of participants to interventions randomised?
+    受試者是否隨機分配？
+
+判定: Yes
+
+佐證:
+  文獻原文 (Methods, p.3): "Patients were randomly assigned in a 1:1 ratio to
+  receive dapagliflozin (10 mg once daily) or matching placebo, with the use of
+  a central interactive web-response system, stratified by diabetes status,
+  UACR, and eGFR."
+
+分析:
+  - 使用中央電腦化隨機系統（interactive web-response system）→ 適當的隨機方法
+  - 有分層隨機（依糖尿病狀態、UACR、eGFR）→ 減少基線不平衡
+  - 1:1 分配比例明確
+  結論: 隨機化方法適當且有充分描述。
+```
+
+### 不好的 CASP 評讀範例（單題）
+
+```
+Q2: Was the assignment of participants to interventions randomised?
+
+判定: Yes
+
+分析: 文章說有隨機分配。
+```
+問題：沒有引用文獻原文、沒有說明隨機方法為何（電腦？信封？）、沒有評估隨機方法是否適當、分析過於簡略，無法讓讀者判斷評讀的可信度。

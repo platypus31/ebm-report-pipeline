@@ -50,14 +50,25 @@ slides.json 格式：
 }
 """
 
+import argparse
 import json
 import sys
 from pathlib import Path
-from pptx import Presentation
-from pptx.util import Inches, Pt, Emu
-from pptx.dml.color import RGBColor
-from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
-from pptx.enum.shapes import MSO_SHAPE
+
+try:
+    from pptx import Presentation
+    from pptx.util import Inches, Pt, Emu
+    from pptx.dml.color import RGBColor
+    from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+    from pptx.enum.shapes import MSO_SHAPE
+except ImportError:
+    print("錯誤：缺少 python-pptx 套件。請執行 pip install python-pptx 安裝。", file=sys.stderr)
+    sys.exit(1)
+
+# ── Constants ──
+
+VALID_STYLES = ["formal", "clean", "teaching", "competition"]
+VALID_SLIDE_TYPES = ["title", "section", "content", "two_column", "table"]
 
 # ── Style definitions ──
 
@@ -388,8 +399,51 @@ def create_table_slide(prs, slide_data, style_colors):
                 paragraph.font.color.rgb = style_colors["text"]
 
 
+def validate_data(data):
+    """Validate input JSON data structure. Raises ValueError on invalid input."""
+    if not isinstance(data, dict):
+        raise ValueError("輸入資料必須是 JSON 物件（字典）。")
+
+    # Required fields
+    missing = []
+    for field in ["title", "style", "slides"]:
+        if field not in data:
+            missing.append(field)
+    if missing:
+        raise ValueError(f"缺少必要欄位：{', '.join(missing)}。JSON 必須包含 title、style、slides。")
+
+    # Validate style
+    style = data["style"]
+    if style not in VALID_STYLES:
+        raise ValueError(
+            f"無效的簡報風格：'{style}'。"
+            f"可用的風格為：{', '.join(VALID_STYLES)}。"
+        )
+
+    # Validate slides
+    slides = data["slides"]
+    if not isinstance(slides, list):
+        raise ValueError("'slides' 欄位必須是陣列。")
+    if len(slides) == 0:
+        raise ValueError("'slides' 陣列不可為空，至少需要一張投影片。")
+
+    for i, slide in enumerate(slides):
+        if not isinstance(slide, dict):
+            raise ValueError(f"第 {i + 1} 張投影片必須是 JSON 物件。")
+        slide_type = slide.get("type")
+        if slide_type is None:
+            raise ValueError(f"第 {i + 1} 張投影片缺少 'type' 欄位。")
+        if slide_type not in VALID_SLIDE_TYPES:
+            raise ValueError(
+                f"第 {i + 1} 張投影片的類型 '{slide_type}' 無效。"
+                f"可用的類型為：{', '.join(VALID_SLIDE_TYPES)}。"
+            )
+
+
 def generate_pptx(data, output_path):
     """Generate the PowerPoint file from structured data."""
+    validate_data(data)
+
     style_name = data.get("style", "formal")
     style_colors = STYLES.get(style_name, STYLES["formal"])
 
@@ -422,17 +476,52 @@ def generate_pptx(data, output_path):
 
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: python3 generate_pptx.py slides.json output.pptx")
+    parser = argparse.ArgumentParser(
+        description="EBM Report PowerPoint 產生器 — 將 JSON 簡報資料轉換為 .pptx 檔案",
+        epilog=(
+            "範例：\n"
+            "  python3 generate_pptx.py slides.json output.pptx\n"
+            "  python3 generate_pptx.py slides.json ~/Desktop/ebm-report.pptx\n\n"
+            "JSON 格式說明：\n"
+            "  必要欄位：title (字串), style (formal|clean|teaching|competition), slides (陣列)\n"
+            "  每張投影片的 type 可為：title, section, content, two_column, table\n"
+            "  詳見 skills/ebm-slides.md 中的 JSON 範例。"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument("input", help="輸入的 JSON 檔案路徑（簡報資料）")
+    parser.add_argument("output", help="輸出的 .pptx 檔案路徑")
+
+    args = parser.parse_args()
+    input_path = args.input
+    output_path = args.output
+
+    # Validate input file exists
+    if not Path(input_path).is_file():
+        print(f"錯誤：找不到輸入檔案 '{input_path}'。請確認路徑是否正確。", file=sys.stderr)
         sys.exit(1)
 
-    input_path = sys.argv[1]
-    output_path = sys.argv[2]
+    # Load and parse JSON
+    try:
+        with open(input_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        print(f"錯誤：JSON 格式不正確。解析失敗於第 {e.lineno} 行，第 {e.colno} 欄。", file=sys.stderr)
+        print(f"詳細資訊：{e.msg}", file=sys.stderr)
+        sys.exit(1)
+    except UnicodeDecodeError:
+        print("錯誤：檔案編碼不正確。請確認檔案為 UTF-8 編碼。", file=sys.stderr)
+        sys.exit(1)
 
-    with open(input_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    generate_pptx(data, output_path)
+    # Validate and generate
+    try:
+        generate_pptx(data, output_path)
+    except ValueError as e:
+        print(f"錯誤：輸入資料驗證失敗。{e}", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"錯誤：產生簡報時發生未預期的錯誤。{e}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
