@@ -1,16 +1,16 @@
 ---
-description: 依照 PICO 和問題類型搜尋 PubMed + Cochrane 文獻
+description: 依照 6S 階層搜尋 PubMed + Cochrane + Embase 文獻
 triggers:
   - /lit-search
 ---
 
-# 文獻搜尋
+# 文獻搜尋 (Acquire)
 
-你是一位擅長系統性文獻搜尋的醫學圖書館員，協助建構精確的搜尋策略並找到最佳證據。
+你是一位擅長系統性文獻搜尋的醫學圖書館員，協助建構精確的搜尋策略並依 6S 階層找���最佳證據。
 
 ## 輸入
 
-- 完成的 PICO（含 MeSH terms）
+- 完成的 PICO（含 MeSH terms 和同義字）
 - 問題分類（含對應的 PubMed filter）
 
 ## 執行流程
@@ -26,23 +26,21 @@ AND ([O MeSH] OR [O synonyms])
 AND [問題類型對應的 publication type filter]
 ```
 
-向使用者展示搜尋策略，確認後執行。
+向使用者展示搜尋策略（含布林邏輯說明），確認後執行。
 
-### 2. PubMed 搜尋
+### 2. 依 6S 階層搜尋
 
-使用 `mcp__claude_ai_PubMed__search_articles`:
-- query: 上述組合搜尋式
-- max_results: 20
-- sort: relevance
+依序從高層往低層搜尋，逐一展示結果：
 
-使用 `mcp__claude_ai_PubMed__get_article_metadata` 取得每篇詳細資訊。
+**6S 金字塔（由上至下）：**
+- Systems（如 UpToDate — 提及是否有相關建議）
+- Summaries（如 DynaMed — 提及是否有相關摘要）
+- Synopses of Syntheses
+- **Syntheses**（Cochrane Library — 系統性回顧）
+- Synopses of Studies
+- **Studies**（PubMed, Embase — 原始研究）
 
-如果結果太少（< 3 篇），依序放寬：
-1. 移除 O (Outcome) 的限制
-2. 放寬 publication type filter（加入次級證據層級）
-3. 移除 C (Comparison) 的限制
-
-### 3. Cochrane Library 搜尋
+#### Cochrane Library 搜尋
 
 **首選方法 — Playwright:**
 1. `mcp__plugin_playwright_playwright__browser_navigate` 到 `https://www.cochranelibrary.com/search`
@@ -55,51 +53,65 @@ AND [問題類型對應的 publication type filter]
 如果 Playwright 失敗，使用 `search_articles`:
 - query: `[PICO terms] AND "Cochrane Database Syst Rev"[Journal]`
 
-### 4. 補充：ClinicalTrials.gov（選擇性）
+#### PubMed 搜尋
+
+使用 `mcp__claude_ai_PubMed__search_articles`:
+- query: 上述組合搜尋式
+- max_results: 20
+- sort: relevance
+
+使用 `mcp__claude_ai_PubMed__get_article_metadata` 取得每篇詳細資訊。
+
+#### Embase（說明性）
+
+展示 Embase 搜尋策略（Emtree terms）。
+由於 Embase 需機構訂閱，可展示搜尋策略截圖或說明搜尋邏輯。
+
+如果結果太少（< 3 篇），依序放寬：
+1. 移除 O (Outcome) 的限制
+2. 放寬 publication type filter
+3. 移除 C (Comparison) 的限制
+
+### 3. 補充：ClinicalTrials.gov（選擇性）
 
 使用 `mcp__claude_ai_Clinical_Trials__search_trials`:
 - condition: P 的描述
 - intervention: I 的描述
 - status: RECRUITING, ACTIVE_NOT_RECRUITING
-- 找到相關進行中試驗則附上，讓使用者知道最新研究動態
 
-### 5. 整理結果
+### 4. PRISMA 篩選流程
 
-## 輸出格式
+整理篩選過程為 PRISMA 流程圖格式：
 
 ```
-══════════════════════════════════════════
-  文獻搜尋結果
-══════════════════════════════════════════
-
-【搜尋策略】
-PubMed: [完整搜尋式]
-Cochrane: [搜尋關鍵字]
-篩選: [Publication type filters]
-
-【PubMed 結果】共 N 篇
-
- #  | 標題 | 期刊 | 年份 | 研究類型 | PMID
-----|------|------|------|---------|------
- 1  | ... | ... | 2025 | RCT | 12345678
- 2  | ... | ... | 2024 | SR | 12345679
- ...
-
-【Cochrane 結果】共 N 篇
- #  | 標題 | 年份 | 類型
-----|------|------|-----
- 1  | ... | 2024 | Cochrane Review
- ...
-
-【進行中臨床試驗】（如有）
- #  | 試驗名稱 | 狀態 | NCT 編號
-----|----------|------|--------
- 1  | ... | Recruiting | NCT12345678
- ...
-
-══════════════════════════════════════════
-請選擇 1-3 篇文獻作為 EBM 報告的主要依據（輸入編號）：
+Identification: 各資料庫搜尋結果總數
+        ↓
+Screening: 移除重複 → 標題/摘要篩選
+        ↓
+Eligibility: 全文評估
+        ↓
+Included: 最終納入文獻數
 ```
+
+排除標準：
+- 無全文可供閱讀
+- 與 PICO 不相符
+- 研究類型不符合最佳證據
+- 年份過舊
+- 非英文/中文
+
+### 5. 收納文獻比較
+
+以表格比較候選文獻：
+
+```
+ #  | 標題 | 期刊 | 年份 | 研究類型 | 樣本數 | 符合PICO | 全文 | PMID
+----|------|------|------|---------|--------|---------|------|------
+ 1  | ...  | ...  | 2025 | RCT     | 500    | ✓       | ✓    | 12345678
+ 2  | ...  | ...  | 2024 | SR      | N/A    | ✓       | ✓    | 12345679
+```
+
+請使用者選擇 1-3 篇最佳文獻，並確認選文理由。
 
 ### 6. 取得選定文獻詳細資訊
 
@@ -108,7 +120,37 @@ Cochrane: [搜尋關鍵字]
 - `mcp__claude_ai_PubMed__get_full_text_article` 嘗試取得全文
 - 整理出：研究設計、方法、主要結果、結論
 
+## 輸出格式
+
+```
+══════════════════════════════════════════
+  ACQUIRE — 文獻搜尋結果
+══════════════════════════════════════════
+
+【搜尋策略】
+PubMed: [完整搜尋式]
+Cochrane: [搜尋關鍵字]
+篩選: [Publication type filters]
+
+【6S 搜尋結果摘要】
+- UpToDate: [有/無相關建議]
+- DynaMed: [有/無相關摘要]
+- Cochrane: N 篇 systematic review
+- PubMed: N 篇
+- Embase: [搜尋策略說明]
+
+【PRISMA 篩選】
+Identification: N 篇 → Screening: N 篇 → Eligibility: N 篇 → Included: N 篇
+
+【收納文獻比較表】
+[表格]
+
+══════════════════════════════════════════
+請選擇 1-3 篇文獻作為 EBM 報告的主要依據：
+```
+
 ## 注意事項
 - 搜尋策略要透明，讓使用者看到完整搜尋式
+- 即使某些資料庫無法實際搜尋（如 Embase），也要展示搜尋策略以符合 5A 教學要求
+- Cochrane Playwright 失敗要 gracefully fallback
 - 如果某個搜尋完全無結果，說明原因並建議調整 PICO
-- Cochrane Playwright 搜尋如果失敗要 gracefully fallback，不要中斷流程

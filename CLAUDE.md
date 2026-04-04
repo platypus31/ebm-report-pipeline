@@ -6,11 +6,12 @@ PGY 住院醫師的 EBM (Evidence-Based Medicine) 報告互動式產生工具。
 
 | Command | File | 說明 |
 |---------|------|------|
-| `/ebm` | `skills/ebm.md` | 主進入點 — 完整 12 步驟 EBM 報告流程 |
+| `/ebm` | `skills/ebm.md` | 主進入點 — 完整 5A 框架 EBM 報告流程 |
 | `/brainstorm` | `skills/brainstorm.md` | 搜尋 PubMed 近期文獻，激發選題靈感 |
 | `/pico` | `skills/pico.md` | PICO 框架分析 |
 | `/classify` | `skills/classify.md` | 臨床問題分類（診斷/預後/治療/預防/病因傷害） |
-| `/lit-search` | `skills/lit-search.md` | 文獻搜尋（PubMed + Cochrane） |
+| `/lit-search` | `skills/lit-search.md` | 6S 階層文獻搜尋（PubMed + Cochrane + Embase） |
+| `/appraise` | `skills/appraise.md` | 嚴格評讀（CASP / RoB 2 / AMSTAR 2） |
 | `/ebm-slides` | `skills/ebm-slides.md` | 產生 EBM 簡報（Canva） |
 
 ## 使用方式
@@ -56,10 +57,16 @@ ebm-report-pipeline/
 │   ├── pico.md                # /pico 分析
 │   ├── classify.md            # /classify 問題分類
 │   ├── lit-search.md          # /lit-search 文獻搜尋
+│   ├── appraise.md            # /appraise 嚴格評讀
 │   └── ebm-slides.md         # /ebm-slides 簡報
 └── data/
     ├── departments.md         # 科別 MeSH 對照表
     ├── study-type-hierarchy.md # 證據層級
     ├── appraisal-tools.md     # 評讀工具對照表 (CASP/AMSTAR/CEBM)
-    └── ebm-slide-template.md  # 簡報範本
+    ├── ebm-slide-template.md  # 簡報結構範本 (5A)
+    └── templates/             # 簡報設計模板
+        ├── style-a-formal.md      # 正式學術風格
+        ├── style-b-clean.md       # 簡潔現代風格
+        ├── style-c-teaching.md    # 教學導向風格
+        └── style-d-competition.md # 競賽完整風格
 ```
