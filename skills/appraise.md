@@ -33,7 +33,10 @@ triggers:
 **評讀模板：** 依選用的工具，從 `data/references/` 複製對應的 CSV 模板到專案目錄：
 - RCT → `data/references/casp-rct-template.csv` → `PROJECT_DIR/03_appraise/appraisal.csv`
 - SR → `data/references/casp-sr-template.csv` → `PROJECT_DIR/03_appraise/appraisal.csv`
-- 其他類型 → 依 `data/appraisal-tools.md` 對照選用適當模板
+- Cohort → `data/references/casp-cohort-template.csv` → `PROJECT_DIR/03_appraise/appraisal.csv`
+- Case-Control → `data/references/casp-case-control-template.csv` → `PROJECT_DIR/03_appraise/appraisal.csv`
+- Diagnostic → `data/references/casp-diagnostic-template.csv` → `PROJECT_DIR/03_appraise/appraisal.csv`
+- 其他類型 → 依 `data/appraisal-tools.md` 對照，使用最接近的模板
 
 ### 2. 逐題評讀
 

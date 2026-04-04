@@ -82,11 +82,15 @@ projects/<name>/
 | 腳本 | 用途 |
 |------|------|
 | `scripts/init_project.py` | 初始化專案目錄結構 |
-| `scripts/validate_step.py` | 驗證各步驟產出是否完整 |
+| `scripts/validate_step.py` | 驗證各步驟產出是否完整（檔案層級） |
+| `scripts/quality_gate.py` | 5A 品質門檻驗證（內容層級，檢查 PICO 欄位、CSV 品質等） |
 | `scripts/build_search_query.py` | 從 PICO YAML 自動建構 PubMed 搜尋式 |
 | `scripts/generate_prisma_flow.py` | 產生 PRISMA 篩選流程圖 |
+| `scripts/dedupe_results.py` | 候選文獻去重（依 PMID → DOI → 標題相似度） |
 | `scripts/export_appraisal.py` | 將評讀 JSON 匯出為結構化 CSV |
+| `scripts/build_slide_outline.py` | 從專案檔案自動組裝 slides.json |
 | `scripts/generate_pptx.py` | python-pptx fallback 簡報產生器 |
+| `scripts/status.py` | 專案進度儀表板 |
 
 ## 品質門檻
 
@@ -107,8 +111,11 @@ projects/<name>/
 | 模板 | 路徑 | 用途 |
 |------|------|------|
 | PICO YAML | `data/references/pico-template.yaml` | PICO 結構化模板 |
-| CASP RCT CSV | `data/references/casp-rct-template.csv` | RCT 評讀模板 |
-| CASP SR CSV | `data/references/casp-sr-template.csv` | SR 評讀模板 |
+| CASP RCT | `data/references/casp-rct-template.csv` | RCT 評讀 11 題 |
+| CASP SR | `data/references/casp-sr-template.csv` | Systematic Review 評讀 10 題 |
+| CASP Cohort | `data/references/casp-cohort-template.csv` | Cohort 評讀 12 題 |
+| CASP Case-Control | `data/references/casp-case-control-template.csv` | Case-Control 評讀 11 題 |
+| CASP Diagnostic | `data/references/casp-diagnostic-template.csv` | Diagnostic 評讀 11 題 |
 
 ## 範例專案
 
@@ -146,13 +153,17 @@ ebm-report-pipeline/
 │   ├── ebm-slides.md                  # /ebm-slides 簡報
 │   ├── save-progress.md               # /save-progress 儲存進度
 │   └── load-progress.md               # /load-progress 載入進度
-├── scripts/                           # 實體腳本
+├── scripts/                           # 實體腳本（10 支）
 │   ├── init_project.py                # 初始化專案
-│   ├── validate_step.py               # 驗證步驟產出
+│   ├── validate_step.py               # 驗證步驟產出（檔案層級）
+│   ├── quality_gate.py                # 品質門檻驗證（內容層級）
 │   ├── build_search_query.py          # 建構搜尋策略
 │   ├── generate_prisma_flow.py        # PRISMA 流程圖
+│   ├── dedupe_results.py              # 文獻去重
 │   ├── export_appraisal.py            # 匯出評讀 CSV
-│   └── generate_pptx.py              # PowerPoint 產生器
+│   ├── build_slide_outline.py         # 自動組裝簡報大綱
+│   ├── generate_pptx.py              # PowerPoint 產生器
+│   └── status.py                      # 專案進度儀表板
 ├── data/                              # 參考資料
 │   ├── departments.md                 # 科別 MeSH 對照表
 │   ├── study-type-hierarchy.md        # 證據層級
@@ -162,7 +173,10 @@ ebm-report-pipeline/
 │   ├── references/                    # 結構化模板
 │   │   ├── pico-template.yaml         # PICO YAML 模板
 │   │   ├── casp-rct-template.csv      # CASP RCT 評讀模板
-│   │   └── casp-sr-template.csv       # CASP SR 評讀模板
+│   │   ├── casp-sr-template.csv       # CASP SR 評讀模板
+│   │   ├── casp-cohort-template.csv   # CASP Cohort 評讀模板
+│   │   ├── casp-case-control-template.csv # CASP Case-Control 評讀模板
+│   │   └── casp-diagnostic-template.csv   # CASP Diagnostic 評讀模板
 │   └── templates/                     # 簡報設計模板
 │       ├── style-a-formal.md
 │       ├── style-b-clean.md

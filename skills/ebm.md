@@ -99,8 +99,8 @@ python3 scripts/init_project.py --name <name>
 ### 品質門檻 — ASK 完成
 
 ASK 階段（Step 4-7）全部完成後：
-1. 驗證產出：確認 `PROJECT_DIR/01_ask/` 下有 `pico.yaml`、`clinical_scenario.md`、`classification.md`
-2. 品質檢核：`pico.yaml` 中 P/I/C/O 的 MeSH 欄位不可為空
+1. 品質門檻：`python3 scripts/quality_gate.py --project <name> --step ask`
+2. 驗證：PICO P/I/C/O 的 MeSH 和中文描述不可為空、topic 已填寫、classification 已完成
 3. 自動執行 `skills/save-progress.md` 儲存進度，`current_step` 設為 "ACQUIRE"
 4. 顯示：「ASK 階段完成，所有產出已寫入 PROJECT_DIR/01_ask/」
 
@@ -144,8 +144,8 @@ ASK 階段（Step 4-7）全部完成後：
 ### 品質門檻 — ACQUIRE 完成
 
 ACQUIRE 階段（Step 8-9）全部完成後：
-1. 驗證產出：確認 `PROJECT_DIR/02_acquire/` 下有 `search_strategy.md`、`selected_articles.md`
-2. 品質檢核：至少選定 1 篇文獻，`candidates.csv` 不為空
+1. 去重檢查：`python3 scripts/dedupe_results.py --project <name>`（如 candidates.csv 有多筆資料）
+2. 品質門檻：`python3 scripts/quality_gate.py --project <name> --step acquire`
 3. 自動執行 `skills/save-progress.md` 儲存進度，`current_step` 設為 "APPRAISE"
 4. 顯示：「ACQUIRE 階段完成，所有產出已寫入 PROJECT_DIR/02_acquire/」
 
@@ -192,8 +192,8 @@ ACQUIRE 階段（Step 8-9）全部完成後：
 ### 品質門檻 — APPRAISE 完成
 
 APPRAISE 階段（Step 10-12）全部完成後：
-1. 驗證產出：確認 `PROJECT_DIR/03_appraise/` 下有 `appraisal.csv`、`results_summary.md`、`coi_check.md`
-2. 品質檢核：`appraisal.csv` 中每題都有 answer 欄位填寫；Can't tell 超過 2 題則顯示警告
+1. 品質門檻：`python3 scripts/quality_gate.py --project <name> --step appraise`
+2. 驗證：appraisal.csv 每題有 answer、佐證覆蓋率 ≥70%、Can't tell ≤ 2 題
 3. 自動執行 `skills/save-progress.md` 儲存進度，`current_step` 設為 "APPLY"
 4. 顯示：「APPRAISE 階段完成，所有產出已寫入 PROJECT_DIR/03_appraise/」
 
@@ -243,10 +243,9 @@ APPRAISE 階段（Step 10-12）全部完成後：
 ### 品質門檻 — APPLY + AUDIT 完成
 
 AUDIT 階段（Step 16）完成後：
-1. 驗證產出：確認 04_apply/ 和 05_audit/ 下有必要檔案
-2. 執行全面驗證（可選）：`python3 scripts/validate_step.py --project <name> --step all`
-3. 自動執行 `skills/save-progress.md` 儲存進度，`current_step` 設為 "SLIDES"
-4. 顯示：「所有 5A 階段已完成，準備產生簡報！」
+1. 品質門檻：`python3 scripts/quality_gate.py --project <name>`（全面驗證所有步驟）
+2. 自動執行 `skills/save-progress.md` 儲存進度，`current_step` 設為 "SLIDES"
+3. 顯示：「所有 5A 階段品質門檻通過，準備產生簡報！」
 
 ---
 
@@ -255,8 +254,8 @@ AUDIT 階段（Step 16）完成後：
 ### Step 17 — 產生簡報
 
 執行 `skills/ebm-slides.md` 的流程：
-- 讀取 `PROJECT_DIR/` 下所有步驟的產出檔案，整理為簡報大綱
-- 參考 `data/ebm-slide-template.md` 的結構
+- 自動組裝大綱：`python3 scripts/build_slide_outline.py --project <name> --style <style>`
+- 讀取 `PROJECT_DIR/` 下所有步驟的產出檔案，參考 `data/ebm-slide-template.md` 補充細節
 - 使用 Canva MCP 產生 50-60 張投影片的簡報
 - 每個 5A 階段之間插入導航過場頁
 - **產出檔案**:

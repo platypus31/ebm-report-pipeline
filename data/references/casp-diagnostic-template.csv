@@ -1,0 +1,12 @@
+number,section,question,question_zh,answer,evidence,analysis
+1,A-Validity,Was there a clear question for the study to address?,此研究是否有一個清楚的研究問題？,,,
+2,A-Validity,Was there a comparison with an appropriate reference standard?,是否有與適當的參考標準進行比較？,,,
+3,A-Validity,Did all patients get the diagnostic test and the reference standard?,所有病人是否都接受了診斷檢查和參考標準？,,,
+4,A-Validity,Could the results of the test have been influenced by the results of the reference standard?,檢查結果是否可能受到參考標準結果的影響？,,,
+5,A-Validity,Is the disease status of the tested population clearly described?,受測族群的疾病狀態是否有清楚描述？,,,
+6,B-Results,What are the results?,結果是什麼？（敏感度、特異度、LR+、LR-）,,,
+7,B-Results,How sure can we be about these results?,我們對這些結果有多確定？（信賴區間）,,,
+8,C-Applicability,Can the results be applied to your patients/the population of interest?,結果能否應用於你的病人或目標族群？,,,
+9,C-Applicability,Can the test be applied in your setting?,此檢查能否在你的臨床環境中執行？,,,
+10,C-Applicability,"Were all outcomes important to the individual or population considered?",是否考慮了對個人或族群重要的所有結果？,,,
+11,C-Applicability,What would be the impact of using this test in your population?,在你的族群使用此檢查會有什麼影響？,,,
