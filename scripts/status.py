@@ -140,7 +140,7 @@ def main():
         sys.exit(0)
 
     # 顯示表格
-    print(f"═══ EBM 專案進度總覽 ═══\n")
+    print("═══ EBM 專案進度總覽 ═══\n")
     for d in dirs:
         topic = get_topic(d)
         progress = build_progress_bar(d)

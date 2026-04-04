@@ -18,31 +18,8 @@ import csv
 import sys
 from pathlib import Path
 
-try:
-    import yaml
-    HAS_YAML = True
-except ImportError:
-    HAS_YAML = False
-
-
-def read_yaml_simple(filepath: Path) -> dict:
-    """Read YAML file, with or without PyYAML."""
-    if HAS_YAML:
-        with open(filepath, encoding="utf-8") as f:
-            return yaml.safe_load(f) or {}
-
-    # Fallback: simple key-value extraction
-    data = {}
-    with open(filepath, encoding="utf-8") as f:
-        for line in f:
-            stripped = line.strip()
-            if stripped.startswith("#") or not stripped or ":" not in stripped:
-                continue
-            key, _, val = stripped.partition(":")
-            val = val.strip().strip('"').strip("'")
-            if val:
-                data[key.strip()] = val
-    return data
+from scripts.utils import file_has_content as _file_has_content
+from scripts.utils import get_project_path, read_yaml
 
 
 class GateResult:
@@ -78,7 +55,7 @@ class GateResult:
 
 def file_has_content(filepath: Path, min_bytes: int = 20) -> bool:
     """Check file exists and has meaningful content."""
-    return filepath.exists() and filepath.stat().st_size >= min_bytes
+    return _file_has_content(filepath, min_bytes)
 
 
 def gate_ask(project: Path) -> GateResult:
@@ -91,7 +68,7 @@ def gate_ask(project: Path) -> GateResult:
     r.check(file_has_content(pico_path), "pico.yaml 存在且有內容")
 
     if pico_path.exists():
-        pico = read_yaml_simple(pico_path)
+        pico = read_yaml(pico_path)
 
         # Check PICO fields are not empty
         pico_section = pico.get("pico", {})
@@ -306,8 +283,7 @@ def main():
     parser.add_argument("--step", choices=STEP_ORDER, help="要驗證的步驟（預設：自動偵測）")
 
     args = parser.parse_args()
-    base_dir = Path(__file__).resolve().parent.parent
-    project = base_dir / "projects" / args.project
+    project = get_project_path(args.project)
 
     if not project.exists():
         print(f"錯誤：找不到專案 '{args.project}'。", file=sys.stderr)
@@ -338,7 +314,7 @@ def main():
         if not result.ok:
             all_ok = False
 
-    print(f"\n═══ 總結 ═══")
+    print("\n═══ 總結 ═══")
     print(f"通過：{total_passed} | 失敗：{total_failed} | 警告：{total_warnings}")
 
     if all_ok:
@@ -347,10 +323,10 @@ def main():
             if next_idx < len(STEP_ORDER):
                 print(f"\n品質門檻通過，可以進入 {STEP_ORDER[next_idx].upper()} 階段。")
             else:
-                print(f"\n所有 5A 階段品質門檻通過，可以產生簡報！")
+                print("\n所有 5A 階段品質門檻通過，可以產生簡報！")
         sys.exit(0)
     else:
-        print(f"\n品質門檻未通過，請修正上述失敗項目後再繼續。")
+        print("\n品質門檻未通過，請修正上述失敗項目後再繼續。")
         sys.exit(1)
 
 

@@ -142,7 +142,9 @@ def create_project(name: str, department: str = "") -> Path:
     # Write pico.yaml template
     pico_content = PICO_TEMPLATE.format(date=today)
     if department:
-        pico_content = pico_content.replace('  name: ""', f'  name: "{department}"')
+        # Escape quotes in department name for valid YAML
+        safe_dept = department.replace("\\", "\\\\").replace('"', '\\"')
+        pico_content = pico_content.replace('  name: ""', f'  name: "{safe_dept}"')
     (project_root / "01_ask" / "pico.yaml").write_text(pico_content, encoding="utf-8")
 
     # Write project README
@@ -174,8 +176,8 @@ def main():
 
     project_root = create_project(args.name, args.department)
     print(f"專案已建立：{project_root}")
-    print(f"  TOPIC.txt  — 請填寫你的臨床問題")
-    print(f"  01_ask/pico.yaml — PICO 模板已建立")
+    print("  TOPIC.txt  — 請填寫你的臨床問題")
+    print("  01_ask/pico.yaml — PICO 模板已建立")
     print()
     print("下一步：啟動 Claude Code，輸入 /ebm 開始流程")
 

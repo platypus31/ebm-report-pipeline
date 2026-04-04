@@ -81,9 +81,9 @@ def generate_flow(
     included_types: list = None,
 ) -> str:
     """Generate PRISMA flow text."""
-    duplicates = identified + other - screened if screened < identified + other else 0
-    screen_excluded = screened - eligible
-    elig_excluded = eligible - included
+    duplicates = max(0, identified + other - screened) if screened < identified + other else 0
+    screen_excluded = max(0, screened - eligible)
+    elig_excluded = max(0, eligible - included)
 
     # Format database details
     db_details = ""
@@ -135,11 +135,12 @@ def load_from_project(project_path: Path) -> dict:
         "other": 0,
     }
 
-    # Try loading from progress JSON in output/
+    # Try loading from progress JSON in project dir
     progress_files = sorted(project_path.glob("*.json"))
     if not progress_files:
-        # Try legacy output/ location
-        output_dir = project_path.parent.parent / "output"
+        # Try legacy output/ location (relative to repo root)
+        base_dir = Path(__file__).resolve().parent.parent
+        output_dir = base_dir / "output"
         progress_files = sorted(output_dir.glob("ebm-*.json"))
 
     for pf in progress_files:
@@ -190,6 +191,8 @@ def main():
             data["eligible"] = args.eligible
         if args.included:
             data["included"] = args.included
+        if args.other:
+            data["other"] = args.other
     else:
         data = {
             "identified": args.identified,
