@@ -1,0 +1,41 @@
+# PICO 分析
+version: "1.0"
+created: "2026-04-04"
+updated: "2026-04-04"
+current_step: "SLIDES"
+
+department:
+  name: "腎臟內科"
+  name_en: "Nephrology"
+  mesh_terms: ["Kidney Diseases", "Renal Dialysis"]
+
+topic: "SGLT2 抑制劑在 CKD 合併第二型糖尿病患者的腎臟保護效果"
+
+clinical_scenario: "68 歲男性，糖尿病病史 15 年，目前使用 Metformin 1000mg BID + Glimepiride 2mg QD 控制血糖，最近抽血發現 eGFR 下降至 38 mL/min/1.73m²（CKD stage 3b），UACR 850 mg/g。HbA1c 7.8%。主治醫師考慮是否加入 SGLT2 抑制劑。"
+
+pico:
+  p:
+    zh: "65 歲以上第二型糖尿病合併慢性腎臟病（eGFR 25-60 mL/min/1.73m²）患者"
+    mesh: '"Diabetes Mellitus, Type 2"[MeSH] AND "Renal Insufficiency, Chronic"[MeSH] AND "Aged"[MeSH]'
+    detail: "排除 eGFR < 25 或已接受透析的患者"
+  i:
+    zh: "Dapagliflozin 10mg 每日一次"
+    mesh: '"Sodium-Glucose Transporter 2 Inhibitors"[MeSH]'
+    detail: "加上原有的標準糖尿病照護"
+  c:
+    zh: "安慰劑（加上標準糖尿病照護）"
+    mesh: '"Placebos"[MeSH]'
+    detail: "所有受試者維持原有 ACEi/ARB、降血糖藥物"
+  o:
+    primary:
+      zh: "腎功能惡化（eGFR 持續下降 ≥50%、末期腎病或腎臟相關死亡之複合結局）"
+      mesh: '"Glomerular Filtration Rate"[MeSH], "Kidney Failure, Chronic"[MeSH]'
+    secondary:
+      zh: "心血管死亡或心衰住院之複合結局"
+      mesh: '"Cardiovascular Diseases"[MeSH], "Heart Failure"[MeSH]'
+
+classification:
+  type: "therapeutic"
+  type_zh: "治療型"
+  reasoning: "I 為藥物治療（SGLT2 inhibitor），比較藥物 vs 安慰劑的臨床結果改善，屬於治療效果評估。"
+  pubmed_filter: "Randomized Controlled Trial[pt] OR Meta-Analysis[pt] OR Systematic Review[pt]"

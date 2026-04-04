@@ -1,0 +1,4 @@
+pmid,title,journal,year,study_type,sample_size,pico_match,fulltext,selected
+32970396,"Dapagliflozin in Patients with Chronic Kidney Disease",NEJM,2020,RCT,4304,完全符合,有,是
+36351458,"Empagliflozin in Patients with Chronic Kidney Disease",NEJM,2023,RCT,6609,完全符合,有,否
+35199849,"SGLT2 Inhibitors for CKD: A Systematic Review and Meta-Analysis",JASN,2025,SR/MA,N/A,完全符合,有,否

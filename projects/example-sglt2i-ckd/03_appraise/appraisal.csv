@@ -1,0 +1,12 @@
+number,section,question,question_zh,answer,evidence,analysis
+1,A-Validity,Did the study address a clearly focused research question?,此研究是否問了一個清楚明確的問題？,Yes,"Methods, p.2: 'We aimed to assess the effect of dapagliflozin on a composite of sustained decline in eGFR of at least 50%, end-stage kidney disease, or death from renal or cardiovascular causes.'",研究問題以 PICO 結構明確呈現，目標清楚。
+2,A-Validity,Was the assignment of participants to interventions randomised?,受試者是否隨機分配？,Yes,"Methods, p.3: 'Patients were randomly assigned in a 1:1 ratio to receive dapagliflozin (10 mg once daily) or matching placebo, with the use of a central interactive web-response system, stratified by diabetes status, UACR, and eGFR.'",使用中央電腦化隨機系統，有分層隨機（依糖尿病狀態、UACR、eGFR），方法適當。
+3,A-Validity,Were all participants who entered the study accounted for at its conclusion?,是否所有受試者都被追蹤到研究結束？,Yes,"Results, p.5: 'The vital status was known for 99.7% of the participants at the end of the trial.'",追蹤完成率極高（99.7%），退出率低且兩組相當。使用 ITT 分析。
+4,A-Validity,"Were the participants 'blind' to intervention they were given?",受試者是否盲化？,Yes,"Methods, p.3: 'This was a randomized, double-blind, placebo-controlled, multicenter trial.'",雙盲設計，使用匹配的安慰劑，受試者與研究者均盲化。
+5,A-Validity,Were the groups similar at the start of the trial?,各組在研究開始時是否相似？,Yes,"Table 1: Baseline characteristics were well balanced between groups.",基線特徵表顯示兩組在年齡、性別、eGFR、UACR、共病等方面均衡。
+6,A-Validity,Were the groups treated equally?,各組是否受到同等對待？,Yes,"Methods: Both groups received standard care including ACEi/ARB.",兩組除了研究藥物/安慰劑外，均接受標準照護，共同介入一致。
+7,B-Results,How large was the treatment effect?,治療效果有多大？,N/A,"Results, p.6: 'HR 0.61 (95% CI, 0.51-0.72; P<0.001) for the primary composite outcome.'","主要複合結局 HR 0.61，代表 39% 風險降低，效果量大且具臨床意義。NNT = 19（2.4 年期間）。"
+8,B-Results,How precise was the estimate of the treatment effect?,效果估計有多精確？,N/A,"95% CI: 0.51-0.72",信賴區間窄且不跨越 1.0，估計精確。P<0.001 顯示統計顯著。
+9,C-Applicability,Can the results be applied to the local population?,結果能否應用於本地族群？,Yes,"Table 1: 13% of participants were from Asia (including Taiwan sites).","DAPA-CKD 為國際多中心試驗，包含亞洲人口（13%），台灣有參與中心。結果適用於本地族群。"
+10,C-Applicability,Were all clinically important outcomes considered?,是否考慮所有臨床重要結果？,Yes,"Results: Primary composite + secondary outcomes including CV death, HF hospitalization, all-cause mortality.",涵蓋腎臟結局、心血管結局、全因死亡率，臨床重要結果完整。
+11,C-Applicability,Are the benefits worth the harms and costs?,效益是否超過傷害和成本？,Yes,"Safety: DKA 0.3% vs 0.1%; no increased hypoglycemia or AKI.","不良事件發生率低，DKA 風險微增但整體安全性良好。台灣健保已給付，成本效益佳。"

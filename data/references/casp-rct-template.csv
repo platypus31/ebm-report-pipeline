@@ -1,0 +1,12 @@
+number,section,question,question_zh,answer,evidence,analysis
+1,A-Validity,Did the study address a clearly focused research question?,此研究是否問了一個清楚明確的問題？,,,
+2,A-Validity,Was the assignment of participants to interventions randomised?,受試者是否隨機分配？,,,
+3,A-Validity,"Were all participants who entered the study accounted for at its conclusion?",是否所有受試者都被追蹤到研究結束���,,,
+4,A-Validity,"Were the participants 'blind' to intervention they were given?",受試者是否盲化？,,,
+5,A-Validity,Were the groups similar at the start of the trial?,各組在研究開始時是否相似？,,,
+6,A-Validity,Were the groups treated equally?,各組是否受到同等對待？,,,
+7,B-Results,How large was the treatment effect?,治療效果有多大？,,,
+8,B-Results,How precise was the estimate of the treatment effect?,效果估計有多精確？,,,
+9,C-Applicability,Can the results be applied to the local population?,結果能否應用於本地族���？,,,
+10,C-Applicability,Were all clinically important outcomes considered?,是否考慮所有臨床重要結果？,,,
+11,C-Applicability,Are the benefits worth the harms and costs?,效益是否超過傷害和成本？,,,
