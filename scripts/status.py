@@ -86,11 +86,17 @@ def check_step(project_path: Path, step_name: str) -> bool:
 def get_last_modified(project_path: Path) -> str:
     """取得專案目錄中最新修改日期。"""
     latest = 0.0
-    for f in project_path.rglob("*"):
-        if f.is_file():
-            mtime = f.stat().st_mtime
-            if mtime > latest:
-                latest = mtime
+    try:
+        for f in project_path.rglob("*"):
+            if f.is_file():
+                try:
+                    mtime = f.stat().st_mtime
+                    if mtime > latest:
+                        latest = mtime
+                except OSError:
+                    continue
+    except OSError:
+        pass
     if latest == 0.0:
         return "—"
     return datetime.fromtimestamp(latest).strftime("%Y-%m-%d")

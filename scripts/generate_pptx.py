@@ -448,7 +448,10 @@ def generate_pptx(data, output_path):
         else:
             create_content_slide(prs, slide_data, style_colors)
 
-    prs.save(output_path)
+    try:
+        prs.save(output_path)
+    except OSError as e:
+        raise OSError(f"無法儲存 PowerPoint 至 '{output_path}'：{e}") from e
     print(f"PowerPoint 已儲存：{output_path}")
 
 

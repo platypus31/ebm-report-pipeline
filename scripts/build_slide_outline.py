@@ -27,11 +27,14 @@ def read_md(filepath: Path) -> str:
 
 
 def read_csv_rows(filepath: Path) -> list[dict]:
-    """Read CSV file rows."""
+    """Read CSV file rows. Returns empty list on any read error."""
     if not filepath.exists():
         return []
-    with open(filepath, encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+    try:
+        with open(filepath, encoding="utf-8") as f:
+            return list(csv.DictReader(f))
+    except (UnicodeDecodeError, csv.Error):
+        return []
 
 
 def extract_yaml_field(content: str, field: str) -> str:
