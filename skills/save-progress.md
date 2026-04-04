@@ -30,20 +30,39 @@ triggers:
 - `self_assessment`: 自我評估結果
 - `template_style`: 選定的簡報風格
 
-### 2. 產生檔案名稱
+### 2. 決定儲存路徑
 
-格式：`ebm-{YYYY-MM-DD}-{slug}.json`
-- `{slug}` 從主題自動產生：取前 3-4 個關鍵英文字，用 `-` 連接，全部小寫
-- 範例：`ebm-2026-04-04-sglt2i-ckd-diabetes.json`
+**主要路徑（project-based）：**
+- 如果 `PROJECT_DIR` 已設定（從 `/ebm` 流程中建立），直接儲存到 `PROJECT_DIR/progress.json`
+- JSON 中額外包含 `project_dir` 欄位，記錄專案路徑（例如 `"project_dir": "projects/sglt2i-ckd-diabetes"`）
+
+**備用路徑（backward compat）：**
+- 如果沒有 `PROJECT_DIR`（例如獨立呼叫 `/save-progress`），則使用舊格式：
+  - 產生檔案名稱：`ebm-{YYYY-MM-DD}-{slug}.json`
+  - `{slug}` 從主題自動產生：取前 3-4 個關鍵英文字，用 `-` 連接，全部小寫
+  - 範例：`ebm-2026-04-04-sglt2i-ckd-diabetes.json`
+  - 儲存至 `output/` 目錄
 
 ### 3. 寫入檔案
 
-- 將 JSON 寫入 `output/` 目錄
+- 如果目標目錄不存在，先建立目錄（`mkdir -p`）
 - 格式化為易讀的 JSON（indent=2）
 - JSON schema 參見 `data/progress-schema.md`
+- JSON 中必須包含 `project_dir` 欄位（若為 project-based 路徑則為專案路徑，若為 output/ 路徑則為 null）
 
 ### 4. 確認
 
+**Project-based 範例：**
+```
+進度已儲存：projects/sglt2i-ckd-diabetes/progress.json
+目前步驟：ACQUIRE（文獻搜尋）
+已完成：科別、主題、PICO、問題分類、搜尋策略
+未完成：評讀、應用、自我評估、簡報
+
+下次使用 /load-progress 即可繼續。
+```
+
+**Backward compat 範例：**
 ```
 進度已儲存：output/ebm-2026-04-04-sglt2i-ckd-diabetes.json
 目前步驟：ACQUIRE（文獻搜尋）
@@ -57,3 +76,4 @@ triggers:
 - 如果同名檔案已存在，更新 `updated` 日期並覆寫
 - 所有使用者互動用**繁體中文**
 - JSON 中的中文欄位值用繁體中文，欄位名稱用英文
+- 寫入前務必確認目標目錄存在，若不存在則自動建立（`output/` 或 `PROJECT_DIR/`）

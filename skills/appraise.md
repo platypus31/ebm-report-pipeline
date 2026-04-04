@@ -30,6 +30,11 @@ triggers:
 
 向使用者說明選用理由，確認後開始評讀。
 
+**評讀模板：** 依選用的工具，從 `data/references/` 複製對應的 CSV 模板到專案目錄：
+- RCT → `data/references/casp-rct-template.csv` → `PROJECT_DIR/03_appraise/appraisal.csv`
+- SR → `data/references/casp-sr-template.csv` → `PROJECT_DIR/03_appraise/appraisal.csv`
+- 其他類型 → 依 `data/appraisal-tools.md` 對照選用適當模板
+
 ### 2. 逐題評讀
 
 依選用工具，**逐題**帶使用者走過 checklist。
@@ -182,3 +187,17 @@ Q2: Was the assignment of participants to interventions randomised?
 分析: 文章說有隨機分配。
 ```
 問題：沒有引用文獻原文、沒有說明隨機方法為何（電腦？信封？）、沒有評估隨機方法是否適當、分析過於簡略，無法讓讀者判斷評讀的可信度。
+
+## 檔案產出
+
+- **從 `/ebm` 流程呼叫時：** 將以下檔案寫入 `PROJECT_DIR/03_appraise/`：
+  - `tool_selection.md` — 選用的評讀工具及理由
+  - `appraisal.csv` — 逐題評讀結果（從模板複製並填入判定與佐證）
+  - `coi_check.md` — 利益衝突檢核結果（經費來源、作者隸屬、利益揭露、判定）
+  - `results_summary.md` — 評讀結果總結（含 Section A/B/C 判定、整體結論、OCEBM Level）
+  - `grade.md`（選擇性）— GRADE 評定結果（若使用者要求）
+- **獨立呼叫 `/appraise` 時：** 先詢問使用者專案名稱（或使用 `projects/` 下最近修改的專案），再寫入對應的 `projects/<name>/03_appraise/` 目錄。如果目錄不存在，先建立之。
+
+### 輔助腳本
+
+- 可使用 `python3 scripts/export_appraisal.py --project <name>` 將 JSON 格式的評讀結果匯出為 CSV

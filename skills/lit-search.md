@@ -174,6 +174,20 @@ Identification: N 篇 → Screening: N 篇 → Eligibility: N 篇 → Included: 
 - Cochrane Playwright 失敗要 gracefully fallback
 - 如果某個搜尋完全無結果，說明原因並建議調整 PICO
 
+## 檔案產出
+
+- **從 `/ebm` 流程呼叫時：** 將以下檔案寫入 `PROJECT_DIR/02_acquire/`：
+  - `search_strategy.md` — 完整搜尋策略（各資料庫搜尋式、filter、6S 結果摘要）
+  - `prisma_flow.md` — PRISMA 篩選流程（Identification → Screening → Eligibility → Included）
+  - `candidates.csv` — 候選文獻表格（標題、期刊、年份、研究類型、樣本數、PMID）
+  - `selected_articles.md` — 最終選定的文獻（含選文理由、完整 metadata）
+- **獨立呼叫 `/lit-search` 時：** 先詢問使用者專案名稱（或使用 `projects/` 下最近修改的專案），再寫入對應的 `projects/<name>/02_acquire/` 目錄。如果目錄不存在，先建立之。
+
+### 輔助腳本
+
+- 可使用 `python3 scripts/build_search_query.py --project <name>` 從 `pico.yaml` 自動建構搜尋式
+- 搜尋完成後，可使用 `python3 scripts/generate_prisma_flow.py --project <name>` 產生 PRISMA 流程圖
+
 ## 範例輸出
 
 ### 好的搜尋策略範例

@@ -137,3 +137,10 @@ triggers:
 
 建議使用者釐清報告焦點後再確定分類。
 ```
+
+## 檔案產出
+
+- **從 `/ebm` 流程呼叫時：**
+  - 將分類結果寫入 `PROJECT_DIR/01_ask/classification.md`（包含類型、理由、最佳證據層級、搜尋 filter）
+  - 更新 `PROJECT_DIR/01_ask/pico.yaml`，在其中新增或更新 `classification` 區塊（記錄 type、rationale、evidence_hierarchy）
+- **獨立呼叫 `/classify` 時：** 先詢問使用者專案名稱（或使用 `projects/` 下最近修改的專案），再寫入對應的 `projects/<name>/01_ask/` 目錄。如果專案目錄不存在，先建立之。
