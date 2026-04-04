@@ -1,0 +1,13 @@
+number,section,question,question_zh,answer,evidence,analysis
+1,A-Validity,Did the study address a clearly focused issue?,此研究是否聚焦於一個清楚明確的議題？,,,
+2,A-Validity,Was the cohort recruited in an acceptable way?,世代的招募方式是否適當？,,,
+3,A-Validity,Was the exposure accurately measured to minimise bias?,暴露的測量是否準確以減少偏差？,,,
+4,A-Validity,Was the outcome accurately measured to minimise bias?,結果的測量是否準確以減少偏差？,,,
+5,A-Validity,Have the authors identified all important confounding factors?,作者是否辨識出所有重要的干擾因子？,,,
+6,A-Validity,Was the follow up of subjects complete enough?,受試者的追蹤是否足夠完整？,,,
+7,A-Validity,Was the follow up of subjects long enough?,受試者的追蹤時間是否足夠長？,,,
+8,B-Results,What are the results of this study?,此研究的結果是什麼？,,,
+9,B-Results,How precise are the results?,結果有多精確？,,,
+10,C-Applicability,Do you believe the results?,你相信這些結果嗎？,,,
+11,C-Applicability,Can the results be applied to the local population?,結果能否應用於本地族群？,,,
+12,C-Applicability,Do the results of this study fit with other available evidence?,此研究結果是否與其他可用證據一致？,,,

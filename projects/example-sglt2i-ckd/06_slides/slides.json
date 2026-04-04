@@ -1,0 +1,312 @@
+{
+  "title": "SGLT2 抑制劑在 CKD 合併第二型糖尿病患者的腎臟保護效果",
+  "author": "範例報告者",
+  "department": "",
+  "date": "2026-04-04",
+  "style": "formal",
+  "slides": [
+    {
+      "type": "section",
+      "title": "ASK",
+      "subtitle": "問題"
+    },
+    {
+      "type": "content",
+      "title": "臨床場景",
+      "bullets": [
+        "Metformin 1000mg BID",
+        "Glimepiride 2mg QD",
+        "Losartan 100mg QD（for hypertension + proteinuria）",
+        "Amlodipine 5mg QD"
+      ],
+      "section": "ASK"
+    },
+    {
+      "type": "content",
+      "title": "PICO 分析",
+      "bullets": [
+        "65 歲以上第二型糖尿病合併慢性腎臟病（eGFR 25-60 mL/min/1.73m²）患者",
+        "Dapagliflozin 10mg 每日一次",
+        "安慰劑（加上標準糖尿病照護）",
+        "腎功能惡化（eGFR 持續下降 ≥50%、末期腎病或腎臟相關死亡之複合結局）"
+      ],
+      "section": "ASK"
+    },
+    {
+      "type": "content",
+      "title": "問題分類",
+      "bullets": [
+        "首選：CASP RCT Checklist",
+        "替代：Cochrane RoB 2.0"
+      ],
+      "section": "ASK"
+    },
+    {
+      "type": "section",
+      "title": "ACQUIRE",
+      "subtitle": "檢索"
+    },
+    {
+      "type": "table",
+      "title": "6S 搜尋結果",
+      "headers": [
+        "層級",
+        "資料庫",
+        "結果"
+      ],
+      "rows": [
+        [
+          "Systems",
+          "UpToDate",
+          "有 \"SGLT2 inhibitors and diabetic kidney disease\" 專題"
+        ],
+        [
+          "Summaries",
+          "DynaMed",
+          "有相關摘要，更新至 2026-02"
+        ],
+        [
+          "Syntheses",
+          "Cochrane Library",
+          "2 篇 systematic review"
+        ],
+        [
+          "Studies",
+          "PubMed",
+          "18 篇（移除重複後 15 篇）"
+        ],
+        [
+          "Studies",
+          "Embase",
+          "搜尋策略已建構（需機構帳號）"
+        ]
+      ],
+      "section": "ACQUIRE"
+    },
+    {
+      "type": "table",
+      "title": "PRISMA 篩選流程",
+      "headers": [
+        "階段",
+        "數量",
+        "說明"
+      ],
+      "rows": [
+        [
+          "Identification",
+          "20",
+          "資料庫搜尋 + 其他來源"
+        ],
+        [
+          "移除重複",
+          "-5",
+          "DOI/PMID/標題比對"
+        ],
+        [
+          "Screening",
+          "15",
+          "標題/摘要篩選"
+        ],
+        [
+          "Eligibility",
+          "8",
+          "全文評估"
+        ],
+        [
+          "**Included**",
+          "**3**",
+          "**最終納入分析**"
+        ]
+      ],
+      "section": "ACQUIRE"
+    },
+    {
+      "type": "table",
+      "title": "收納文獻比較",
+      "headers": [
+        "標題",
+        "期刊",
+        "年份",
+        "研究類���"
+      ],
+      "rows": [
+        [
+          "Dapagliflozin in Patients with Chronic K...",
+          "NEJM",
+          "2020",
+          "RCT"
+        ],
+        [
+          "Empagliflozin in Patients with Chronic K...",
+          "NEJM",
+          "2023",
+          "RCT"
+        ],
+        [
+          "SGLT2 Inhibitors for CKD: A Systematic R...",
+          "JASN",
+          "2025",
+          "SR/MA"
+        ]
+      ],
+      "section": "ACQUIRE"
+    },
+    {
+      "type": "section",
+      "title": "APPRAISE",
+      "subtitle": "評讀"
+    },
+    {
+      "type": "content",
+      "title": "Section A — Validity（效度） (1)",
+      "bullets": [
+        "Q1: 此研究是否問了一個清楚明確的問題？ → Yes",
+        "Q2: 受試者是否隨機分配？ → Yes",
+        "Q3: 是否所有受試者都被追蹤到研究結束？ → Yes"
+      ],
+      "section": "APPRAISE"
+    },
+    {
+      "type": "content",
+      "title": "Section A — Validity（效度） (2)",
+      "bullets": [
+        "Q4: 受試者是否盲化？ → Yes",
+        "Q5: 各組在研究開始時是否相似？ → Yes",
+        "Q6: 各組是否受到同等對待？ → Yes"
+      ],
+      "section": "APPRAISE"
+    },
+    {
+      "type": "content",
+      "title": "Section B — Results（結果）",
+      "bullets": [
+        "Q7: 治療效果有多大？ → N/A",
+        "Q8: 效果估計有多精確？ → N/A"
+      ],
+      "section": "APPRAISE"
+    },
+    {
+      "type": "content",
+      "title": "Section C — Applicability（適用性）",
+      "bullets": [
+        "Q9: 結果能否應用於本地族群？ → Yes",
+        "Q10: 是否考慮所有臨床重要結果？ → Yes",
+        "Q11: 效益是否超過傷害和成本？ → Yes"
+      ],
+      "section": "APPRAISE"
+    },
+    {
+      "type": "content",
+      "title": "利益衝突檢核",
+      "bullets": [
+        "通訊作者 Heerspink HJL：University Medical Center Groningen（學術機構）",
+        "部分共同作者為 AstraZeneca 員工",
+        "多位作者曾擔任 AstraZeneca 顧問或接受演講費"
+      ],
+      "section": "APPRAISE"
+    },
+    {
+      "type": "table",
+      "title": "研究結果",
+      "headers": [
+        "指標",
+        "Dapagliflozin",
+        "Placebo",
+        "HR (95% CI)",
+        "P-value"
+      ],
+      "rows": [
+        [
+          "Primary composite",
+          "9.2%",
+          "14.5%",
+          "**0.61 (0.51-0.72)**",
+          "**< 0.001**"
+        ],
+        [
+          "ARR",
+          "—",
+          "—",
+          "5.3%",
+          "—"
+        ],
+        [
+          "NNT",
+          "—",
+          "—",
+          "**19** (over 2.4 yr)",
+          "—"
+        ],
+        [
+          "結局",
+          "HR (95% CI)",
+          "P-value"
+        ],
+        [
+          "腎臟複合結局（不含 CV death）",
+          "0.56 (0.45-0.68)",
+          "< 0.001"
+        ]
+      ],
+      "section": "APPRAISE"
+    },
+    {
+      "type": "section",
+      "title": "APPLY",
+      "subtitle": "應用"
+    },
+    {
+      "type": "content",
+      "title": "台灣在地化考量",
+      "bullets": [
+        "台灣健保自 2024 年起已給付 Dapagliflozin (Forxiga) 用於 CKD 患者",
+        "給付條件：eGFR 25-75 mL/min/1.73m²，合併蛋白尿（UACR > 200 mg/g）",
+        "每月藥費約 NT$1,200（健保價）",
+        "台灣腎臟醫學會 2024 CKD 指引已將 SGLT2i 列為第一線建議",
+        "建議在 ACEi/ARB 最大耐受劑量基礎上加入 SGLT2i"
+      ],
+      "section": "APPLY"
+    },
+    {
+      "type": "content",
+      "title": "臨床回覆 (1/2)",
+      "bullets": [
+        "陳先生，您的腎功能目前在中度到重度之間，加上糖尿病和蛋白尿，腎功能有持續惡化的風險。",
+        "根據目前最好的研究證據，有一種叫做「排糖藥」（Dapagliflozin）的藥物，經過四千多人的大型研究證實，可以讓腎功能惡化的風險降低大約四成。",
+        "具體來說，如果 100 位像您這樣的病人，不吃這個藥的話大約有 15 位會在兩年多內腎功能嚴重惡化，吃了這個藥可以減少到大約 9 位。也就是說，每治療 19 位病人，就能多保護 1 位的腎功能。",
+        "這個藥的安全性也不錯，最常見的副作用是泌尿道感染（約 1-2%），少數人可能有血酮酸升高的情況。"
+      ],
+      "section": "APPLY"
+    },
+    {
+      "type": "content",
+      "title": "臨床回覆 (2/2)",
+      "bullets": [
+        "這個藥台灣健保有給付，您的條件符合給付標準，每個月不用額外負擔藥費。",
+        "我的建議是在您目前的藥物基礎上，加入這個藥來保護腎功能。我們每三個月追蹤一次腎功能，看看效果如何。您覺得怎麼樣？"
+      ],
+      "section": "APPLY"
+    },
+    {
+      "type": "section",
+      "title": "AUDIT",
+      "subtitle": "評估"
+    },
+    {
+      "type": "content",
+      "title": "自我評估",
+      "bullets": [
+        "總共花費時間：約 4 小時"
+      ],
+      "section": "AUDIT"
+    },
+    {
+      "type": "content",
+      "title": "References",
+      "bullets": [
+        "（由評讀文獻自動產生）"
+      ],
+      "section": "AUDIT"
+    }
+  ]
+}

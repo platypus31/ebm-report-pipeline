@@ -1,0 +1,44 @@
+# PICO 分析模板
+# 複製此檔案到 projects/<name>/01_ask/pico.yaml 使用
+# 或使用 python3 scripts/init_project.py 自動建立
+
+version: "1.0"
+created: ""       # YYYY-MM-DD
+updated: ""       # YYYY-MM-DD
+current_step: ""  # TOPIC / ASK / ACQUIRE / APPRAISE / APPLY / AUDIT / SLIDES
+
+department:
+  name: ""        # 繁體中文科別名稱
+  name_en: ""     # English department name
+  mesh_terms: []  # ["MeSH Term 1", "MeSH Term 2"]
+
+topic: ""         # 繁體中文主題描述
+
+clinical_scenario: ""  # 臨床情境描述
+
+pico:
+  p:
+    zh: ""        # 繁體中文 — 族群/問題描述
+    mesh: ""      # PubMed MeSH: "Term"[MeSH] AND "Term"[MeSH]
+    detail: ""    # 具體限定條件（年齡、共病、嚴重度）
+  i:
+    zh: ""        # 繁體中文 — 介入描述
+    mesh: ""      # PubMed MeSH
+    detail: ""    # 具體藥物/劑量/療程
+  c:
+    zh: ""        # 繁體中文 — 比較組描述
+    mesh: ""      # PubMed MeSH
+    detail: ""    # 安慰劑/標準治療/其他藥物
+  o:
+    primary:
+      zh: ""      # 繁體中文 — 主要結局
+      mesh: ""    # PubMed MeSH
+    secondary:
+      zh: ""      # 繁體中文 — 次要結局
+      mesh: ""    # PubMed MeSH
+
+classification:
+  type: ""        # therapeutic / preventive / diagnostic / prognostic / etiology_harm
+  type_zh: ""     # 治療型 / 預防型 / 診斷型 / 預後型 / 病因傷害型
+  reasoning: ""   # 分類理由
+  pubmed_filter: ""  # 對應的 PubMed publication type filter

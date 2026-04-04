@@ -12,17 +12,28 @@ triggers:
 
 ### 1. 列出已儲存的進度檔案
 
-掃描 `output/` 目錄中所有符合 `ebm-*.json` 的檔案，以表格呈現：
+從兩個來源掃描已儲存的進度：
+
+**來源 A — Project-based（主要）：**
+- 掃描 `projects/` 目錄中的所有子目錄
+- 讀取每個專案的 `progress.json`（若存在）取得 `current_step` 和 `updated`
+- 讀取 `01_ask/pico.yaml`（若存在）取得主題和 PICO 資訊
+
+**來源 B — Legacy（backward compat）：**
+- 掃描 `output/` 目錄中所有符合 `ebm-*.json` 的檔案
+
+將兩個來源合併，以表格呈現：
 
 ```
 ══════════════════════════════════════════
   已儲存的 EBM 報告進度
 ══════════════════════════════════════════
 
- #  | 檔案名稱                              | 主題                    | 目前步驟  | 更新日期
-----|---------------------------------------|------------------------|----------|----------
- 1  | ebm-2026-04-04-sglt2i-ckd-diabetes.json | SGLT2i 在 CKD 合併糖尿病 | ACQUIRE  | 2026-04-04
- 2  | ebm-2026-03-28-ht-cTnI-ami.json        | hs-cTnI 診斷 AMI        | APPRAISE | 2026-03-28
+ #  | 來源    | 專案/檔案名稱                          | 主題                    | 目前步驟  | 更新日期
+----|---------|---------------------------------------|------------------------|----------|----------
+ 1  | project | projects/sglt2i-ckd-diabetes/          | SGLT2i 在 CKD 合併糖尿病 | ACQUIRE  | 2026-04-04
+ 2  | project | projects/hs-ctni-ami/                  | hs-cTnI 診斷 AMI        | APPRAISE | 2026-03-28
+ 3  | legacy  | output/ebm-2026-03-15-aspirin-cad.json | Aspirin 在 CAD 預防      | ASK      | 2026-03-15
 
 ══════════════════════════════════════════
 請選擇要載入的進度（輸入編號），或輸入 0 開始新報告：
@@ -32,6 +43,13 @@ triggers:
 
 ### 2. 載入選定的檔案
 
+**Project-based 來源：**
+- 設定 `PROJECT_DIR` 為選定的專案目錄（例如 `projects/sglt2i-ckd-diabetes/`）
+- 讀取 `PROJECT_DIR/progress.json`
+- 讀取各步驟子目錄中的結構化檔案（`01_ask/pico.yaml`、`02_acquire/search_strategy.md` 等）
+- 將所有已儲存的資料載入到對話 context 中
+
+**Legacy 來源：**
 - 讀取 JSON 檔案
 - 驗證 `version` 欄位是否相容
 - 將所有已儲存的資料載入到對話 context 中

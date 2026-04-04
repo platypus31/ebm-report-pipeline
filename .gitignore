@@ -3,4 +3,7 @@
 __pycache__/
 output/
 .claude/
-references/
+
+# Projects are user-specific, don't track (except example)
+projects/*/
+!projects/example-sglt2i-ckd/

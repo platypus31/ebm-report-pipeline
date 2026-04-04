@@ -1,0 +1,11 @@
+number,section,question,question_zh,answer,evidence,analysis
+1,A-Validity,Did the review address a clearly focused question?,此回顧是否問了一個清楚明確的問題？,,,
+2,A-Validity,Did the authors look for the right type of papers?,作者是否搜尋了正確類型的研究？,,,
+3,A-Validity,Do you think all the important relevant studies were included?,是否納入所有重要的相關研究？,,,
+4,A-Validity,Did the review's authors do enough to assess quality of the included studies?,作者是否充分評估納入研究的品質？,,,
+5,A-Validity,"If the results of the review have been combined, was it reasonable to do so?",如果合併結果，合併是否合理？,,,
+6,B-Results,What are the overall results of the review?,回顧的整體結果是什麼？,,,
+7,B-Results,How precise are the results?,結果有多精確？,,,
+8,C-Applicability,Can the results be applied to the local population?,結果能否應用於本地族群？,,,
+9,C-Applicability,Were all important outcomes considered?,是否考慮所有重要結果？,,,
+10,C-Applicability,Are the benefits worth the harms and costs?,效益是否超過傷害和成本？,,,

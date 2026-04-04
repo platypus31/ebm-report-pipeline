@@ -1,6 +1,10 @@
 # EBM 進度檔案 JSON Schema
 
-`output/ebm-{date}-{slug}.json` 的資料結構定義。
+> **注意**：本 schema 同時支援舊版 `output/ebm-{date}-{slug}.json` 格式與新版
+> `projects/<name>/progress.json` 格式。新版專案建議使用 `project_dir` 欄位指向
+> 對應的專案目錄。
+
+`output/ebm-{date}-{slug}.json` 或 `projects/<name>/progress.json` 的資料結構定義。
 
 ## Schema
 
@@ -10,6 +14,7 @@
   "created": "2026-04-04",
   "updated": "2026-04-04",
   "current_step": "ACQUIRE",
+  "project_dir": "projects/sglt2i-ckd",
 
   "department": {
     "name": "腎臟內科",
@@ -135,6 +140,7 @@
 | `created` | string | 是 | 首次建立日期（YYYY-MM-DD） |
 | `updated` | string | 是 | 最後更新日期（YYYY-MM-DD） |
 | `current_step` | string | 是 | 目前步驟：TOPIC / ASK / ACQUIRE / APPRAISE / APPLY / AUDIT / SLIDES |
+| `project_dir` | string / null | 否 | 對應專案目錄相對路徑（如 `projects/sglt2i-ckd`），新版格式使用 |
 | `department` | object / null | 否 | 科別資訊 |
 | `topic` | string / null | 否 | 報告主題 |
 | `clinical_scenario` | string / null | 否 | 臨床情境描述 |
