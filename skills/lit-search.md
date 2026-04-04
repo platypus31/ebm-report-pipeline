@@ -55,12 +55,32 @@ AND [問題類型對應的 publication type filter]
 
 #### PubMed 搜尋
 
+**首選方法 — PubMed MCP:**
 使用 `mcp__claude_ai_PubMed__search_articles`:
 - query: 上述組合搜尋式
 - max_results: 20
 - sort: relevance
 
 使用 `mcp__claude_ai_PubMed__get_article_metadata` 取得每篇詳細資訊。
+
+**Fallback 方法 — WebSearch + WebFetch（PubMed MCP 不可用時）:**
+
+1. **WebSearch 搜尋 PubMed:**
+   - 使用 `WebSearch` 工具，設定 `allowed_domains: ["pubmed.ncbi.nlm.nih.gov"]`
+   - query: `[P 關鍵字] [I 關鍵字] [研究類型] site:pubmed.ncbi.nlm.nih.gov`
+   - 從結果 URL 提取 PMID（`pubmed.ncbi.nlm.nih.gov/<PMID>/`）
+
+2. **WebFetch PubMed E-utilities API（精確搜尋）:**
+   - esearch: `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=20&sort=relevance&term=[完整搜尋式 URL encoded]`
+   - efetch（取得詳細資訊）: `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&retmode=xml&id=[PMID1],[PMID2],...`
+   - 從 XML 回應中提取：ArticleTitle, Journal/Title, PubDate, PMID, Abstract
+
+3. **結果不足時依序放寬:**
+   - 移除 O (Outcome) 的限制
+   - 放寬 publication type filter
+   - 移除 C (Comparison) 的限制
+
+每次使用 fallback 時，告知使用者：「PubMed MCP 不可用，已使用 [WebSearch/E-utilities API] 搜尋。」
 
 #### Embase（說明性）
 
@@ -116,9 +136,17 @@ Included: 最終納入文獻數
 ### 6. 取得選定文獻詳細資訊
 
 對使用者選定的文獻：
+
+**首選方法 — PubMed MCP:**
 - `mcp__claude_ai_PubMed__get_article_metadata` 取得完整 metadata
 - `mcp__claude_ai_PubMed__get_full_text_article` 嘗試取得全文
-- 整理出：研究設計、方法、主要結果、結論
+
+**Fallback 方法（MCP 不可用時）:**
+- `WebFetch` 取得 PubMed 頁面：`https://pubmed.ncbi.nlm.nih.gov/<PMID>/`
+- 從頁面提取摘要、作者、期刊、DOI 等資訊
+- 如有 PMC 全文連結，使用 `WebFetch` 取得 PMC 頁面內容
+
+整理出：研究設計、方法、主要結果、結論
 
 ## 輸出格式
 
@@ -153,6 +181,12 @@ Identification: N 篇 → Screening: N 篇 → Eligibility: N 篇 → Included: 
 
 各資料庫搜尋失敗時，依照以下順序自動 fallback：
 
+### PubMed（核心資料庫）
+1. PubMed MCP `search_articles` + `get_article_metadata`（首選，最佳精準度）
+2. 如果 MCP 不可用 → `WebSearch` 設定 `allowed_domains: ["pubmed.ncbi.nlm.nih.gov"]`
+3. 如果 WebSearch 結果不足 → `WebFetch` 呼叫 PubMed E-utilities API（esearch + efetch）
+4. 如果以上皆失敗 → 請使用者提供已知的 PMID 或文獻標題
+
 ### Cochrane Library
 1. Playwright 瀏覽器自動搜尋（首選）
 2. 如果 Playwright 失敗 → WebFetch 取得 Cochrane 網頁內容
@@ -166,7 +200,11 @@ Identification: N 篇 → Screening: N 篇 → Eligibility: N 篇 → Included: 
 1. Clinical Trials MCP `search_trials`（首選）
 2. 如果 MCP 失敗 → WebFetch 搜尋 `https://clinicaltrials.gov/search?cond=[P]&intr=[I]`
 
-每次 fallback 時，明確告知使用者：「[資料庫] 的 [首選方法] 無法使用，已自動切換到 [備用方法]。」
+### Fallback 行為規範
+- 每次 fallback 時，明確告知使用者：「[資料庫] 的 [首選方法] 無法使用，已自動切換到 [備用方法]。」
+- 使用 WebSearch fallback 時，在輸出中標註「（WebSearch fallback）」
+- 使用 E-utilities API fallback 時，在輸出中標註「（E-utilities API fallback）」
+- 記錄使用了哪些 fallback 到 `search_strategy.md` 中，方便日後重現搜尋
 
 ## 注意事項
 - 搜尋策略要透明，讓使用者看到完整搜尋式

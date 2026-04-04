@@ -18,6 +18,8 @@ triggers:
    - 參考 `data/departments.md` 取得對應的 MeSH Terms
 
 2. **搜尋 PubMed 近期文獻**
+
+   **首選方法 — PubMed MCP:**
    - 使用 `mcp__claude_ai_PubMed__search_articles` 搜尋
    - 搜尋條件：
      - query: 科別 MeSH terms
@@ -26,12 +28,45 @@ triggers:
      - max_results: 20
    - 如果結果少於 5 篇，放寬到最近 3 個月
 
+   **Fallback 方法 — WebSearch（PubMed MCP 不可用時）:**
+   - 使用 `WebSearch` 工具搜尋 PubMed 網站
+   - 搜尋策略：
+     1. 第一輪：`[科別英文] [MeSH keyword] RCT OR systematic review OR meta-analysis 2026 site:pubmed.ncbi.nlm.nih.gov`
+     2. 第二輪（如果結果不足）：放寬為 `[科別英文] [MeSH keyword] clinical trial 2025 2026 site:pubmed.ncbi.nlm.nih.gov`
+   - 也可使用 `allowed_domains: ["pubmed.ncbi.nlm.nih.gov"]` 參數限定搜尋範圍
+   - 從搜尋結果的 URL 提取 PMID（格式為 `pubmed.ncbi.nlm.nih.gov/<PMID>/`）
+   - 告知使用者：「PubMed MCP 不可用，已自動切換到 WebSearch。搜尋精準度可能略低。」
+
+   **Fallback 方法 — WebFetch（直接查詢 PubMed API）:**
+   - 如果 WebSearch 結果不理想，可使用 `WebFetch` 直接呼叫 PubMed E-utilities API：
+     ```
+     https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=20&sort=date&term=[MeSH]+AND+(randomized+controlled+trial[pt]+OR+systematic+review[pt]+OR+meta-analysis[pt])
+     ```
+   - 從回傳的 JSON 取得 PMID 列表，再用 efetch 取得摘要：
+     ```
+     https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&retmode=xml&id=[PMID1],[PMID2],...
+     ```
+
 3. **取得文獻資訊**
-   - 使用 `mcp__claude_ai_PubMed__get_article_metadata` 取得每篇文獻的詳細資訊
+   - **首選**: `mcp__claude_ai_PubMed__get_article_metadata` 取得每篇文獻的詳細資訊
+   - **Fallback**: 從 WebSearch/WebFetch 結果中提取標題、期刊、日期等資訊
 
 4. **篩選與呈現**
    - 挑出最有臨床意義的 5-8 篇
    - 優先選擇：practice-changing RCTs、重要 systematic reviews、新治療指引相關
+
+## Fallback 流程總覽
+
+```
+PubMed MCP 可用？
+  ├─ 是 → search_articles + get_article_metadata（最佳體驗）
+  └─ 否 → WebSearch (site:pubmed) 搜尋
+              ├─ 結果充足 → 從 URL 提取 PMID，呈現結果
+              └─ 結果不足 → WebFetch PubMed E-utilities API
+                              └─ 仍不足 → 請使用者提供自己感興趣的主題或 PMID
+```
+
+每次使用 fallback 時，在輸出標題列標註「（WebSearch fallback）」讓使用者知道資料來源。
 
 ## 輸出格式
 
