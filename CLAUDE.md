@@ -1,12 +1,12 @@
 # EBM Report Pipeline
 
-PGY 住院醫師的 EBM (Evidence-Based Medicine) 報告互動式產生工具。從選科別到產出簡報的完整 7 步驟流程。
+PGY 住院醫師的 EBM (Evidence-Based Medicine) 報告互動式產生工具。從選科別到產出簡報的完整 12 步驟流程。
 
 ## Skills
 
 | Command | File | 說明 |
 |---------|------|------|
-| `/ebm` | `skills/ebm.md` | 主進入點 — 完整 7 步驟 EBM 報告流程 |
+| `/ebm` | `skills/ebm.md` | 主進入點 — 完整 12 步驟 EBM 報告流程 |
 | `/brainstorm` | `skills/brainstorm.md` | 搜尋 PubMed 近期文獻，激發選題靈感 |
 | `/pico` | `skills/pico.md` | PICO 框架分析 |
 | `/classify` | `skills/classify.md` | 臨床問題分類（診斷/預後/治療/預防/病因傷害） |
@@ -60,5 +60,6 @@ ebm-report-pipeline/
 └── data/
     ├── departments.md         # 科別 MeSH 對照表
     ├── study-type-hierarchy.md # 證據層級
+    ├── appraisal-tools.md     # 評讀工具對照表 (CASP/AMSTAR/CEBM)
     └── ebm-slide-template.md  # 簡報範本
 ```

@@ -37,22 +37,32 @@ claude
 | `/lit-search` | 文獻搜尋 |
 | `/ebm-slides` | 產生簡報 |
 
-## 7 步驟流程
+## 完整流程
 
 ```
-Step 1: 選擇科別（NEPH, CV, GU...）
+Step 1:  選擇科別（NEPH, CV, GU...）
     ↓
-Step 2: 有題目？ ──Y──→ Step 4
+Step 2:  有題目？ ──Y──→ Step 4
     ↓ N
-Step 3: Brainstorm（PubMed 近 1 月文獻）
+Step 3:  Brainstorm（PubMed 近 1 月文獻）
     ↓
-Step 4: PICO 分析
+Step 4:  PICO 分析
     ↓
-Step 5: 問題分類（診斷/預後/治療/預防/病因傷害）
+Step 5:  建立臨床情境 (Clinical Scenario)
     ↓
-Step 6: 文獻搜尋（PubMed + Cochrane）
+Step 6:  問題分類（診斷/預後/治療/預防/病因傷害）
     ↓
-Step 7: 產生簡報（Canva）
+Step 7:  文獻搜尋（PubMed + Embase + Cochrane + UpToDate + DynaMed）
+    ↓
+Step 8:  說明選文理由
+    ↓
+Step 9:  Critical Appraisal（CASP / AMSTAR 2 / CEBM 評讀）
+    ↓
+Step 10: 臨床應用 (Applying)
+    ↓
+Step 11: 自我評估 (Self-Assessment)
+    ↓
+Step 12: 產生簡報（Canva）
 ```
 
 ## 證據層級篩選
