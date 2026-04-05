@@ -6,6 +6,17 @@
   "style": "formal",
   "slides": [
     {
+      "type": "toc",
+      "title": "目錄 / 5A 流程",
+      "items": [
+        "ASK — 提出臨床問題、PICO 分析",
+        "ACQUIRE — 6S 搜尋、PRISMA 篩選",
+        "APPRAISE — 嚴格評讀、研究結果",
+        "APPLY — 證據等級、在地化、臨床回覆",
+        "AUDIT — 五面向自我評估"
+      ]
+    },
+    {
       "type": "section",
       "title": "ASK",
       "subtitle": "問題"
@@ -14,30 +25,167 @@
       "type": "content",
       "title": "臨床場景",
       "bullets": [
-        "Metformin 1000mg BID",
-        "Glimepiride 2mg QD",
-        "Losartan 100mg QD（for hypertension + proteinuria）",
-        "Amlodipine 5mg QD"
+        "68 歲陳先生，第二型糖尿病病史 15 年，過去一直在門診規則追蹤。",
+        "陳先生的腎功能持續惡化（CKD stage 3b），蛋白尿明顯。雖然已使用 ARB 最大劑量，eGFR 仍在過去一年下降 8 mL/min/1.73m²。主治醫師考慮是否加入 SGLT2 抑制劑（如 Dapagliflozin）來延緩腎功能惡化。",
+        "**核心問題**：對於已使用 ARB 的 CKD 合併 T2DM 患者，加入 SGLT2 抑制劑是否能有效延緩腎功能惡化？"
+      ],
+      "section": "ASK"
+    },
+    {
+      "type": "table",
+      "title": "最新檢驗數據",
+      "headers": [
+        "項目",
+        "數值",
+        "參考值"
+      ],
+      "rows": [
+        [
+          "HbA1c",
+          "7.8%",
+          "< 7.0%"
+        ],
+        [
+          "eGFR",
+          "38 mL/min/1.73m²",
+          "> 60"
+        ],
+        [
+          "UACR",
+          "850 mg/g",
+          "< 30"
+        ],
+        [
+          "Creatinine",
+          "1.8 mg/dL",
+          "0.7-1.3"
+        ],
+        [
+          "K+",
+          "4.5 mEq/L",
+          "3.5-5.0"
+        ]
       ],
       "section": "ASK"
     },
     {
       "type": "content",
-      "title": "PICO 分析",
+      "title": "慢性腎臟病流行病學",
       "bullets": [
-        "65 歲以上第二型糖尿病合併慢性腎臟病（eGFR 25-60 mL/min/1.73m²）患者",
-        "Dapagliflozin 10mg 每日一次",
-        "安慰劑（加上標準糖尿病照護）",
-        "腎功能惡化（eGFR 持續下降 ≥50%、末期腎病或腎臟相關死亡之複合結局）"
+        "慢性腎臟病（Chronic Kidney Disease, CKD）為全球重大公共衛生議題。根據台灣腎臟",
+        "醫學會統計，台灣成人 CKD 盛行率約為 12%，推估約有 200 萬人以上受影響。CKD 不僅",
+        "增加心血管事件風險，晚期更可能進展至末期腎臟病（End-Stage Renal Disease, ESRD），",
+        "需接受透析或腎臟移植治療。台灣長期以來透析盛行率居全球前列，對醫療資源造成沉重"
       ],
       "section": "ASK"
     },
     {
       "type": "content",
-      "title": "問題分類",
+      "title": "第二型糖尿病與慢性腎臟病之關聯",
       "bullets": [
+        "第二型糖尿病（Type 2 Diabetes Mellitus, T2DM）為 CKD 最主要的致病因子之一。糖尿",
+        "病腎病變（Diabetic Nephropathy）為台灣新進入透析病患的首要原因，佔所有新透析個案",
+        "約 40-45%。長期高血糖狀態導致腎絲球高過濾、基底膜增厚、系膜基質堆積，最終引起",
+        "腎絲球硬化及腎小管間質纖維化。隨著病程進展，蛋白尿增加、腎絲球過濾率（eGFR）",
+        "逐漸下降，部分患者在 10-20 年內進展至 ESRD。"
+      ],
+      "section": "ASK"
+    },
+    {
+      "type": "content",
+      "title": "目前治療策略",
+      "bullets": [
+        "現行 CKD 合併 T2DM 患者的腎臟保護治療以腎素-血管張力素-醛固酮系統",
+        "（Renin-Angiotensin-Aldosterone System, RAAS）阻斷劑為基石，包含血管張力素轉化酶",
+        "抑制劑（ACEi）及血管張力素受體阻斷劑（ARB）。此類藥物已被證實可降低蛋白尿、",
+        "延緩 eGFR 下降速率，為國際指引建議之一線治療。然而，即使在最佳化 RAAS 阻斷劑",
+        "治療下，仍有相當比例的患者持續出現腎功能惡化，顯示目前治療仍有未被滿足的臨床"
+      ],
+      "section": "ASK"
+    },
+    {
+      "type": "content",
+      "title": "知識缺口與研究動機",
+      "bullets": [
+        "鈉-葡萄糖共同轉運蛋白 2 抑制劑（Sodium-Glucose Cotransporter 2 Inhibitors, SGLT2i）",
+        "最初開發為降血糖藥物，但近年大型隨機對照試驗（如 CREDENCE、DAPA-CKD、",
+        "EMPA-KIDNEY）陸續發現其具有獨立於降糖效果之外的腎臟保護作用。SGLT2i 可能透過",
+        "降低腎絲球內壓力（管球回饋機制）、減輕近曲小管氧氣消耗、抑制發炎及纖維化路徑等",
+        "然而，對於 SGLT2i 在已接受 RAAS 阻斷劑之 CKD 合併 T2DM 患者中，能否進一步降低"
+      ],
+      "section": "ASK"
+    },
+    {
+      "type": "content",
+      "title": "參考文獻",
+      "bullets": [
+        "1. Wen CP, et al. All-cause mortality attributable to chronic kidney disease: a prospective",
+        "cohort study based on 462,293 adults in Taiwan. Lancet. 2008;371(9631):2173-2182.",
+        "2. USRDS Annual Data Report. 2023.",
+        "3. Heerspink HJL, et al. Dapagliflozin in patients with chronic kidney disease. NEJM.",
+        "2020;383(15):1436-1446."
+      ],
+      "section": "ASK"
+    },
+    {
+      "type": "content",
+      "title": "臨床問題分類",
+      "bullets": [
+        "治療型 (Therapeutic)",
+        "3. **結論**: I 為藥物治療 + O 為臨床結果改善 → **治療型**",
         "首選：CASP RCT Checklist",
-        "替代：Cochrane RoB 2.0"
+        "替代：Cochrane RoB 2.0",
+        "1. **I 的性質分析**: 介入為 Dapagliflozin 10mg（SGLT2 抑制劑）— 這是一種藥物治療",
+        "2. **O 的性質分析**: 結果為腎功能惡化（eGFR 下降、末期腎病、腎臟相關死亡）— 這是臨床結果改善指標"
+      ],
+      "section": "ASK"
+    },
+    {
+      "type": "content",
+      "title": "最佳證據層級",
+      "bullets": [
+        "1. **I 的性質分析**: 介入為 Dapagliflozin 10mg（SGLT2 抑制劑）— 這是一種藥物治療",
+        "2. **O 的性質分析**: 結果為腎功能惡化（eGFR 下降、末期腎病、腎臟相關死亡）— 這是臨床結果改善指標",
+        "3. **結論**: I 為藥物治療 + O 為臨床結果改善 → **治療型**",
+        "1. Systematic Review / Meta-analysis of RCTs",
+        "2. Individual RCT"
+      ],
+      "section": "ASK"
+    },
+    {
+      "type": "table",
+      "title": "PICO 分析",
+      "headers": [
+        "PICO",
+        "定義",
+        "臨床情境關鍵字",
+        "MeSH Terms"
+      ],
+      "rows": [
+        [
+          "P (Population)",
+          "65 歲以上第二型糖尿病合併慢性腎臟病（eGFR 25-60 mL/min/1.73m²）患者",
+          "68 歲, 糖尿病病史 15 年, eGFR 38, CKD stage 3b",
+          "\"Diabetes Mellitus, Type 2\"[MeSH] AND \"R"
+        ],
+        [
+          "I (Intervention)",
+          "Dapagliflozin 10mg 每日一次",
+          "加入 SGLT2 抑制劑, 如 Dapagliflozin",
+          "\"Sodium-Glucose Transporter 2 Inhibitors"
+        ],
+        [
+          "C (Comparison)",
+          "安慰劑（加上標準糖尿病照護）",
+          "已使用 Metformin, Glimepiride, ARB 最大劑量",
+          "\"Placebos\"[MeSH]"
+        ],
+        [
+          "O (Outcome)",
+          "腎功能惡化（eGFR 持續下降 ≥50%、末期腎病或腎臟相關死亡之複合結局）",
+          "腎功能持續惡化, eGFR 下降 8 mL/min/年",
+          "\"Glomerular Filtration Rate\"[MeSH], \"Kid"
+        ]
       ],
       "section": "ASK"
     },
@@ -47,8 +195,28 @@
       "subtitle": "檢索"
     },
     {
+      "type": "content",
+      "title": "PubMed 搜尋策略",
+      "bullets": [
+        "(\"Diabetes Mellitus, Type 2\"[MeSH] OR \"type 2 diabetes\" OR \"T2DM\")",
+        "AND (\"Sodium-Glucose Transporter 2 Inhibitors\"[MeSH] OR \"SGLT2 inhibitor\" OR \"dapagliflozin\" OR \"empagliflozin\" OR \"canagliflozin\")",
+        "AND (\"Placebos\"[MeSH] OR \"placebo\" OR \"standard care\")",
+        "AND (\"Glomerular Filtration Rate\"[MeSH] OR \"eGFR\" OR \"renal progression\" OR \"kidney failure\" OR \"Kidney Failure, Chronic\"[MeSH])",
+        "AND (Randomized Controlled Trial[pt] OR Meta-Analysis[pt] OR Systematic Review[pt])"
+      ],
+      "section": "ACQUIRE"
+    },
+    {
+      "type": "content",
+      "title": "搜尋條件",
+      "bullets": [
+        "篩選條件**: Publication type = RCT, SR, MA | 時間 = 2019-2026"
+      ],
+      "section": "ACQUIRE"
+    },
+    {
       "type": "table",
-      "title": "6S 搜尋結果",
+      "title": "6S 搜尋結果摘要",
       "headers": [
         "層級",
         "資料庫",
@@ -122,12 +290,12 @@
     },
     {
       "type": "table",
-      "title": "收納文獻比較",
+      "title": "候選文獻比較",
       "headers": [
         "標題",
         "期刊",
         "年份",
-        "研究類���"
+        "研究類型"
       ],
       "rows": [
         [
@@ -152,46 +320,161 @@
       "section": "ACQUIRE"
     },
     {
+      "type": "table",
+      "title": "選定文獻",
+      "headers": [
+        "項目",
+        "內容"
+      ],
+      "rows": [
+        [
+          "作者",
+          "Heerspink HJL, Stefánsson BV, Correa-Rotter R, et al."
+        ],
+        [
+          "期刊",
+          "New England Journal of Medicine"
+        ],
+        [
+          "年份",
+          "2020"
+        ],
+        [
+          "PMID",
+          "32970396"
+        ],
+        [
+          "DOI",
+          "10.1056/NEJMoa2024816"
+        ]
+      ],
+      "section": "ACQUIRE"
+    },
+    {
+      "type": "table",
+      "title": "排除文獻與理由",
+      "headers": [
+        "文獻",
+        "排除理由"
+      ],
+      "rows": [
+        [
+          "EMPA-KIDNEY (NEJM, 2023)",
+          "也是優秀 RCT，但 DAPA-CKD 更早發表且為 practice-changing"
+        ],
+        [
+          "SGLT2i SR/MA (JASN, 2025)",
+          "系統性回顧，但使用者選擇直接評讀原始 RCT"
+        ]
+      ],
+      "section": "ACQUIRE"
+    },
+    {
       "type": "section",
       "title": "APPRAISE",
       "subtitle": "評讀"
     },
     {
       "type": "content",
+      "title": "評讀工具選擇",
+      "bullets": [
+        "**CASP RCT Checklist**",
+        "1. 文獻類型為 **RCT（隨機對照試驗）** 2. CASP RCT Checklist 是台灣 PGY EBM 訓練最常用的 RCT 評讀工具 3. 結構清晰（3 sections, 11 questions），適合做簡報呈現 4. 涵蓋 Validity → Results → Applicability 完整評讀面向",
+        "如需更精細的偏差風險評估，可使用 Cochrane RoB 2.0（5 domains）。"
+      ],
+      "section": "APPRAISE"
+    },
+    {
+      "type": "appraisal",
       "title": "Section A — Validity（效度） (1)",
-      "bullets": [
-        "Q1: 此研究是否問了一個清楚明確的問題？ → Yes",
-        "Q2: 受試者是否隨機分配？ → Yes",
-        "Q3: 是否所有受試者都被追蹤到研究結束？ → Yes"
+      "questions": [
+        {
+          "number": "Q1",
+          "text": "此研究是否問了一個清楚明確的問題？",
+          "answer": "Yes",
+          "evidence": "Methods, p.2: 'We aimed to assess the effect of dapagliflozin on a composite of "
+        },
+        {
+          "number": "Q2",
+          "text": "受試者是否隨機分配？",
+          "answer": "Yes",
+          "evidence": "Methods, p.3: 'Patients were randomly assigned in a 1:1 ratio to receive dapagli"
+        },
+        {
+          "number": "Q3",
+          "text": "是否所有受試者都被追蹤到研究結束？",
+          "answer": "Yes",
+          "evidence": "Results, p.5: 'The vital status was known for 99.7% of the participants at the e"
+        },
+        {
+          "number": "Q4",
+          "text": "受試者是否盲化？",
+          "answer": "Yes",
+          "evidence": "Methods, p.3: 'This was a randomized, double-blind, placebo-controlled, multicen"
+        }
       ],
       "section": "APPRAISE"
     },
     {
-      "type": "content",
+      "type": "appraisal",
       "title": "Section A — Validity（效度） (2)",
-      "bullets": [
-        "Q4: 受試者是否盲化？ → Yes",
-        "Q5: 各組在研究開始時是否相似？ → Yes",
-        "Q6: 各組是否受到同等對待？ → Yes"
+      "questions": [
+        {
+          "number": "Q5",
+          "text": "各組在研究開始時是否相似？",
+          "answer": "Yes",
+          "evidence": "Table 1: Baseline characteristics were well balanced between groups."
+        },
+        {
+          "number": "Q6",
+          "text": "各組是否受到同等對待？",
+          "answer": "Yes",
+          "evidence": "Methods: Both groups received standard care including ACEi/ARB."
+        }
       ],
       "section": "APPRAISE"
     },
     {
-      "type": "content",
+      "type": "appraisal",
       "title": "Section B — Results（結果）",
-      "bullets": [
-        "Q7: 治療效果有多大？ → N/A",
-        "Q8: 效果估計有多精確？ → N/A"
+      "questions": [
+        {
+          "number": "Q7",
+          "text": "治療效果有多大？",
+          "answer": "N/A",
+          "evidence": "Results, p.6: 'HR 0.61 (95% CI, 0.51-0.72; P<0.001) for the primary composite ou"
+        },
+        {
+          "number": "Q8",
+          "text": "效果估計有多精確？",
+          "answer": "N/A",
+          "evidence": "95% CI: 0.51-0.72"
+        }
       ],
       "section": "APPRAISE"
     },
     {
-      "type": "content",
+      "type": "appraisal",
       "title": "Section C — Applicability（適用性）",
-      "bullets": [
-        "Q9: 結果能否應用於本地族群？ → Yes",
-        "Q10: 是否考慮所有臨床重要結果？ → Yes",
-        "Q11: 效益是否超過傷害和成本？ → Yes"
+      "questions": [
+        {
+          "number": "Q9",
+          "text": "結果能否應用於本地族群？",
+          "answer": "Yes",
+          "evidence": "Table 1: 13% of participants were from Asia (including Taiwan sites)."
+        },
+        {
+          "number": "Q10",
+          "text": "是否考慮所有臨床重要結果？",
+          "answer": "Yes",
+          "evidence": "Results: Primary composite + secondary outcomes including CV death, HF hospitali"
+        },
+        {
+          "number": "Q11",
+          "text": "效益是否超過傷害和成本？",
+          "answer": "Yes",
+          "evidence": "Safety: DKA 0.3% vs 0.1%; no increased hypoglycemia or AKI."
+        }
       ],
       "section": "APPRAISE"
     },
@@ -207,7 +490,7 @@
     },
     {
       "type": "table",
-      "title": "研究結果",
+      "title": "Primary Outcome",
       "headers": [
         "指標",
         "Dapagliflozin",
@@ -236,16 +519,112 @@
           "—",
           "**19** (over 2.4 yr)",
           "—"
-        ],
-        [
-          "結局",
-          "HR (95% CI)",
-          "P-value"
-        ],
+        ]
+      ],
+      "section": "APPRAISE"
+    },
+    {
+      "type": "table",
+      "title": "Secondary Outcomes",
+      "headers": [
+        "結局",
+        "HR (95% CI)",
+        "P-value"
+      ],
+      "rows": [
         [
           "腎臟複合結局（不含 CV death）",
           "0.56 (0.45-0.68)",
           "< 0.001"
+        ],
+        [
+          "CV death or HF hospitalization",
+          "0.71 (0.55-0.92)",
+          "0.009"
+        ],
+        [
+          "All-cause mortality",
+          "0.69 (0.53-0.88)",
+          "0.004"
+        ]
+      ],
+      "section": "APPRAISE"
+    },
+    {
+      "type": "table",
+      "title": "安全性",
+      "headers": [
+        "不良事件",
+        "Dapagliflozin",
+        "Placebo"
+      ],
+      "rows": [
+        [
+          "DKA",
+          "0.3%",
+          "0.1%"
+        ],
+        [
+          "嚴重低血糖",
+          "0.7%",
+          "1.3%"
+        ],
+        [
+          "AKI",
+          "1.0%",
+          "1.4%"
+        ],
+        [
+          "Fournier's gangrene",
+          "0",
+          "0"
+        ]
+      ],
+      "section": "APPRAISE"
+    },
+    {
+      "type": "table",
+      "title": "GRADE 證據品質評定",
+      "headers": [
+        "項目",
+        "判定",
+        "說明"
+      ],
+      "rows": [
+        [
+          "起始等級",
+          "High (RCT)",
+          "—"
+        ],
+        [
+          "Risk of bias",
+          "不降級",
+          "適當隨機化、盲化、低退出率"
+        ],
+        [
+          "Inconsistency",
+          "不降級",
+          "亞組分析結果一致"
+        ],
+        [
+          "Indirectness",
+          "不降級",
+          "PICO 完全符合，含亞洲人口"
+        ],
+        [
+          "Imprecision",
+          "不降級",
+          "CI 窄、P < 0.001"
+        ],
+        [
+          "Publication bias",
+          "不降級",
+          "已註冊試驗，多中心"
+        ],
+        [
+          "**最終等級**",
+          "**High**",
+          "⊕⊕⊕⊕"
         ]
       ],
       "section": "APPRAISE"
@@ -254,6 +633,51 @@
       "type": "section",
       "title": "APPLY",
       "subtitle": "應用"
+    },
+    {
+      "type": "content",
+      "title": "OCEBM 證據等級",
+      "bullets": [
+        "Level 2** — Individual RCT (with narrow confidence interval)"
+      ],
+      "section": "APPLY"
+    },
+    {
+      "type": "table",
+      "title": "OCEBM 2011 證據層級",
+      "headers": [
+        "Level",
+        "研究設計",
+        "本文獻"
+      ],
+      "rows": [
+        [
+          "1",
+          "SR of RCTs",
+          "—"
+        ],
+        [
+          "**2**",
+          "**Individual RCT**",
+          "**← DAPA-CKD**"
+        ],
+        [
+          "3",
+          "Cohort study",
+          "—"
+        ],
+        [
+          "4",
+          "Case series",
+          "—"
+        ],
+        [
+          "5",
+          "Expert opinion",
+          "—"
+        ]
+      ],
+      "section": "APPLY"
     },
     {
       "type": "content",
@@ -273,8 +697,7 @@
       "bullets": [
         "陳先生，您的腎功能目前在中度到重度之間，加上糖尿病和蛋白尿，腎功能有持續惡化的風險。",
         "根據目前最好的研究證據，有一種叫做「排糖藥」（Dapagliflozin）的藥物，經過四千多人的大型研究證實，可以讓腎功能惡化的風險降低大約四成。",
-        "具體來說，如果 100 位像您這樣的病人，不吃這個藥的話大約有 15 位會在兩年多內腎功能嚴重惡化，吃了這個藥可以減少到大約 9 位。也就是說，每治療 19 位病人，就能多保護 1 位的腎功能。",
-        "這個藥的安全性也不錯，最常見的副作用是泌尿道感染（約 1-2%），少數人可能有血酮酸升高的情況。"
+        "具體來說，如果 100 位像您這樣的病人，不吃這個藥的話大約有 15 位會在兩年多內腎功能嚴重惡化，吃了這個藥可以減少到大約 9 位。也就是說，每治療 19 位病人，就能多保護 1 位的腎功能。"
       ],
       "section": "APPLY"
     },
@@ -282,6 +705,7 @@
       "type": "content",
       "title": "臨床回覆 (2/2)",
       "bullets": [
+        "這個藥的安全性也不錯，最常見的副作用是泌尿道感染（約 1-2%），少數人可能有血酮酸升高的情況。",
         "這個藥台灣健保有給付，您的條件符合給付標準，每個月不用額外負擔藥費。",
         "我的建議是在您目前的藥物基礎上，加入這個藥來保護腎功能。我們每三個月追蹤一次腎功能，看看效果如何。您覺得怎麼樣？"
       ],
@@ -294,8 +718,50 @@
     },
     {
       "type": "content",
-      "title": "自我評估",
+      "title": "自我評估：1. 提出臨床問題",
       "bullets": [
+        "[✓] 問題是否具有臨床重要性？— 是，CKD + T2DM 是腎臟科最常見的問題",
+        "[✓] 問題是否明確陳述？— 是，PICO 結構完整",
+        "[✓] 問題定位是否清楚？— 是，治療型問題"
+      ],
+      "section": "AUDIT"
+    },
+    {
+      "type": "content",
+      "title": "自我評估：2. 搜尋最佳證據",
+      "bullets": [
+        "[✓] 是否盡全力搜尋？— 是，使用 PubMed + Cochrane + ClinicalTrials.gov",
+        "[✓] 是否知道最佳來源？— 是，依 6S 金字塔由上往下搜尋",
+        "[✓] 是否多資料庫搜尋？— 是，3 個以上資料庫"
+      ],
+      "section": "AUDIT"
+    },
+    {
+      "type": "content",
+      "title": "自我評估：3. 搜尋技巧",
+      "bullets": [
+        "[✓] 搜尋是否使用 MeSH terms？— 是",
+        "[✓] 是否使用布林邏輯？— 是 (AND/OR)",
+        "[✓] 是否使用 publication type filter？— 是 (RCT, SR, MA)",
+        "[✗] 搜尋能力是否優於同事？— 仍有進步空間"
+      ],
+      "section": "AUDIT"
+    },
+    {
+      "type": "content",
+      "title": "自我評估：4. 應用到臨床",
+      "bullets": [
+        "[✓] 是否考慮在地因素？— 是，考慮台灣健保、用藥可取得性",
+        "[✓] 能否用病人聽得懂的話解釋？— 是，已準備去學術化回覆",
+        "[✓] 當證據與實際做法不同時如何解釋？— 此證據與現行指引一致"
+      ],
+      "section": "AUDIT"
+    },
+    {
+      "type": "content",
+      "title": "自我評估：5. 改變醫療行為",
+      "bullets": [
+        "[✓] 這次 EBM 練習是否改變了臨床決策？— 是，更有信心建議 CKD 患者使用 SGLT2i",
         "總共花費時間：約 4 小時"
       ],
       "section": "AUDIT"
@@ -304,7 +770,11 @@
       "type": "content",
       "title": "References",
       "bullets": [
-        "（由評讀文獻自動產生）"
+        "1. Wen CP, et al. All-cause mortality attributable to chronic kidney disease: a prospective",
+        "2. USRDS Annual Data Report. 2023.",
+        "3. Heerspink HJL, et al. Dapagliflozin in patients with chronic kidney disease. NEJM.",
+        "4. Perkovic V, et al. Canagliflozin and renal outcomes in type 2 diabetes and nephropathy.",
+        "PMID | 32970396 |"
       ],
       "section": "AUDIT"
     }
