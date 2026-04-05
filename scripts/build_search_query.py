@@ -25,35 +25,50 @@ try:
 except ImportError:
     yaml = None
 
-# Publication type filters by question type
-# 每個類型包含該類型最佳證據設計 + Meta-Analysis + Systematic Review
-PUB_FILTERS = {
-    # 治療型：RCT 為最佳證據
-    "therapeutic": (
-        '(Randomized Controlled Trial[pt] OR Meta-Analysis[pt] OR Systematic Review[pt])'
-    ),
-    # 預防型：同治療型，RCT 為最佳證據
-    "preventive": (
-        '(Randomized Controlled Trial[pt] OR Meta-Analysis[pt] OR Systematic Review[pt])'
-    ),
-    # 診斷型：Prospective blinded cross-sectional + gold standard comparison
-    "diagnostic": (
-        '((Sensitivity and Specificity[MeSH]) OR (Cross-Sectional Studies[MeSH])'
-        ' OR (Prospective Studies[MeSH]) OR (Reference Standards[MeSH])'
-        ' OR Meta-Analysis[pt] OR Systematic Review[pt])'
-    ),
-    # 預後型：Cohort > Case-control > Case series
-    "prognostic": (
-        '(Cohort Studies[MeSH] OR Prognosis[MeSH]'
-        ' OR Case-Control Studies[MeSH]'
-        ' OR Meta-Analysis[pt] OR Systematic Review[pt])'
-    ),
-    # 病因傷害型：Cohort > Case-control > Case series
-    "etiology_harm": (
-        '(Cohort Studies[MeSH] OR Case-Control Studies[MeSH] OR Risk Factors[MeSH]'
-        ' OR Meta-Analysis[pt] OR Systematic Review[pt])'
-    ),
+# ── Fallback chain: 每個問題類型按證據等級排列搜尋篩選器 ──
+# tier 0 = 最高證據等級（優先搜尋）
+# tier 1 = 次高（tier 0 結果不足時放寬）
+# tier 2 = 第三層（再放寬）
+# 使用時：先用 tier 0 搜尋，結果 < 閾值 → 合併 tier 0+1，仍不足 → 合併全部
+PUB_FILTER_CHAIN: dict[str, list[str]] = {
+    # 治療型：SR/MA of RCTs → RCT → Cohort → Case-control / Case series
+    "therapeutic": [
+        '(Meta-Analysis[pt] OR Systematic Review[pt] OR Randomized Controlled Trial[pt])',
+        '(Controlled Clinical Trial[pt] OR Cohort Studies[MeSH])',
+        '(Case-Control Studies[MeSH] OR Observational Study[pt])',
+    ],
+    # 預防型：同治療型
+    "preventive": [
+        '(Meta-Analysis[pt] OR Systematic Review[pt] OR Randomized Controlled Trial[pt])',
+        '(Controlled Clinical Trial[pt] OR Cohort Studies[MeSH])',
+        '(Case-Control Studies[MeSH] OR Observational Study[pt])',
+    ],
+    # 診斷型：Prospective blind + gold standard → Cross-sectional / Retrospective → Case-control
+    "diagnostic": [
+        (
+            '(Systematic Review[pt] OR Meta-Analysis[pt]'
+            ' OR ((Sensitivity and Specificity[MeSH]) AND (Prospective Studies[MeSH]'
+            ' OR Cross-Sectional Studies[MeSH]) AND (Reference Standards[MeSH])))'
+        ),
+        '((Sensitivity and Specificity[MeSH]) OR (Cross-Sectional Studies[MeSH]))',
+        '(Case-Control Studies[MeSH] OR Observational Study[pt])',
+    ],
+    # 預後型：Cohort → Case-control → Case series
+    "prognostic": [
+        '(Systematic Review[pt] OR Meta-Analysis[pt] OR Cohort Studies[MeSH] OR Prognosis[MeSH])',
+        '(Case-Control Studies[MeSH])',
+        '(Observational Study[pt] OR Case Reports[pt])',
+    ],
+    # 病因傷害型：Cohort → Case-control → Case series
+    "etiology_harm": [
+        '(Systematic Review[pt] OR Meta-Analysis[pt] OR Cohort Studies[MeSH])',
+        '(Case-Control Studies[MeSH] OR Risk Factors[MeSH])',
+        '(Observational Study[pt] OR Case Reports[pt])',
+    ],
 }
+
+# 向後相容：PUB_FILTERS = 各類型 tier 0（最嚴格）
+PUB_FILTERS = {k: v[0] for k, v in PUB_FILTER_CHAIN.items()}
 
 LANG_FILTERS = {
     "en": "English[lang]",
@@ -249,6 +264,25 @@ def _extract_mesh(
     return _join_or(all_terms) if all_terms else ""
 
 
+def _resolve_pub_filter(q_type: str, tier: int) -> str:
+    """Resolve publication type filter for a given question type and tier.
+
+    tier=0: strictest (highest evidence only)
+    tier=1: merge tier 0 + tier 1
+    tier=2: merge tier 0 + 1 + 2 (broadest)
+    """
+    chain = PUB_FILTER_CHAIN.get(q_type, [])
+    if not chain:
+        return ""
+    # Clamp tier to available range
+    max_tier = min(tier, len(chain) - 1)
+    if max_tier == 0:
+        return chain[0]
+    # Merge tiers: combine all filters up to requested tier with OR
+    merged = " OR ".join(chain[: max_tier + 1])
+    return f"({merged})"
+
+
 def build_query(
     pico_data: dict,
     q_type: str = "",
@@ -257,6 +291,7 @@ def build_query(
     include_secondary: bool = True,
     expand: bool = False,
     dept_mesh: list[str] | None = None,
+    tier: int = 0,
 ) -> str:
     """Build PubMed query from PICO data.
 
@@ -268,6 +303,7 @@ def build_query(
         include_secondary: Include secondary outcomes in search.
         expand: Expand MeSH terms with title/abstract synonyms.
         dept_mesh: Department MeSH terms to scope the search.
+        tier: Evidence tier (0=strictest, 1=relaxed, 2=broadest).
     """
     pico = pico_data.get("pico", {})
     parts = []
@@ -303,12 +339,12 @@ def build_query(
 
     query = "\nAND ".join(parts)
 
-    # Add publication type filter
+    # Add publication type filter (tier-based fallback)
     classification = pico_data.get("classification", {})
     if not q_type:
         q_type = classification.get("type", "")
 
-    pub_filter = PUB_FILTERS.get(q_type, "")
+    pub_filter = _resolve_pub_filter(q_type, tier)
     if pub_filter:
         query += f"\nAND {pub_filter}"
 
@@ -322,6 +358,46 @@ def build_query(
         query += f"\nAND {lang_filter}"
 
     return query
+
+
+def build_query_chain(
+    pico_data: dict, **kwargs
+) -> list[dict[str, str]]:
+    """Build a list of queries from strictest to broadest evidence tier.
+
+    Returns list of dicts: [{"tier": 0, "label": "...", "query": "..."}]
+    Each successive tier is more relaxed. The caller should try tier 0 first,
+    and only move to higher tiers if results are insufficient.
+    """
+    q_type = kwargs.get("q_type", "")
+    if not q_type:
+        classification = pico_data.get("classification", {})
+        if isinstance(classification, dict):
+            q_type = classification.get("type", "")
+
+    chain = PUB_FILTER_CHAIN.get(q_type, [])
+    num_tiers = max(len(chain), 1)
+
+    tier_labels = {
+        "therapeutic": ["SR/MA + RCT", "Controlled Trial + Cohort", "Case-Control + Observational"],
+        "preventive": ["SR/MA + RCT", "Controlled Trial + Cohort", "Case-Control + Observational"],
+        "diagnostic": [
+            "SR/MA + Prospective Blind + Gold Standard",
+            "Cross-Sectional + Sensitivity/Specificity",
+            "Case-Control + Observational",
+        ],
+        "prognostic": ["SR/MA + Cohort", "Case-Control", "Observational + Case Reports"],
+        "etiology_harm": ["SR/MA + Cohort", "Case-Control + Risk Factors", "Observational + Case Reports"],
+    }
+    labels = tier_labels.get(q_type, ["Tier 0", "Tier 1", "Tier 2"])
+
+    results = []
+    for t in range(num_tiers):
+        query = build_query(pico_data, **{**kwargs, "tier": t})
+        if query:
+            label = labels[t] if t < len(labels) else f"Tier {t}"
+            results.append({"tier": t, "label": label, "query": query})
+    return results
 
 
 def build_eutils_url(query: str, retmax: int = 100) -> str:
@@ -342,6 +418,8 @@ def main():
             "  python3 scripts/build_search_query.py --project sglt2i-ckd --years 5 --lang en\n"
             "  python3 scripts/build_search_query.py --project sglt2i-ckd --expand\n"
             "  python3 scripts/build_search_query.py --project sglt2i-ckd --url --retmax 50\n"
+            "  python3 scripts/build_search_query.py --project sglt2i-ckd --chain\n"
+            "  python3 scripts/build_search_query.py --project sglt2i-ckd --tier 1\n"
             "  python3 scripts/build_search_query.py --department 腎臟內科\n"
             "  python3 scripts/build_search_query.py --department NEPH --expand --years 3\n"
         ),
@@ -355,6 +433,10 @@ def main():
     parser.add_argument("--no-secondary", action="store_true", help="不包含次要結局")
     parser.add_argument("--expand", action="store_true", help="展開 MeSH 同義詞（加入 [tiab] 搜尋）")
     parser.add_argument("--department", default="", help="科別篩選（縮寫/中文/英文，如 NEPH、腎臟內科、Nephrology）")
+    parser.add_argument("--tier", type=int, default=0, choices=[0, 1, 2],
+                        help="證據等級層（0=最嚴格, 1=放寬, 2=最寬鬆）")
+    parser.add_argument("--chain", action="store_true",
+                        help="顯示完整 fallback chain（所有層級的搜尋式）")
     parser.add_argument("--url", action="store_true", help="同時輸出 E-utilities API URL")
     parser.add_argument("--retmax", type=int, default=100, help="E-utilities 最大回傳筆數（預設 100）")
     parser.add_argument("--output", help="輸出檔案路徑")
@@ -370,22 +452,12 @@ def main():
             print(f"警告：找不到科別 '{args.department}' 的 MeSH terms。", file=sys.stderr)
             print("可用科別：使用 --department 搭配縮寫（NEPH）、中文（腎臟內科）或英文（Nephrology）。", file=sys.stderr)
 
+    # ── Load PICO data ──
     if args.project:
         pico_path = base_dir / "projects" / args.project / "01_ask" / "pico.yaml"
     elif args.pico:
         pico_path = Path(args.pico)
     elif args.department and dept_mesh:
-        # Department-only mode: no PICO file needed
-        pico_data = {}
-        query = build_query(
-            pico_data,
-            q_type=args.type,
-            years=args.years,
-            lang=args.lang,
-            expand=args.expand,
-            dept_mesh=dept_mesh,
-        )
-        # Skip PICO file loading, jump to output
         pico_path = None
     else:
         parser.print_help()
@@ -395,7 +467,6 @@ def main():
         if not pico_path.exists():
             print(f"錯誤：找不到 PICO 檔案 '{pico_path}'。", file=sys.stderr)
             sys.exit(1)
-
         try:
             if yaml:
                 with open(pico_path, encoding="utf-8") as f:
@@ -405,20 +476,53 @@ def main():
         except Exception as e:
             print(f"錯誤：無法讀取 PICO 檔案 '{pico_path}'。{e}", file=sys.stderr)
             sys.exit(1)
-
         if not isinstance(pico_data, dict):
             print("錯誤：PICO 檔案格式不正確（預期為 YAML 物件）。", file=sys.stderr)
             sys.exit(1)
+    else:
+        pico_data = {}
 
-        query = build_query(
-            pico_data,
-            q_type=args.type,
-            years=args.years,
-            lang=args.lang,
-            include_secondary=not args.no_secondary,
-            expand=args.expand,
-            dept_mesh=dept_mesh,
-        )
+    # ── Shared build kwargs ──
+    build_kwargs = dict(
+        q_type=args.type,
+        years=args.years,
+        lang=args.lang,
+        include_secondary=not args.no_secondary,
+        expand=args.expand,
+        dept_mesh=dept_mesh,
+    )
+
+    # ── Chain mode: show all tiers ──
+    if args.chain:
+        chain = build_query_chain(pico_data, **build_kwargs)
+        if not chain:
+            print("警告：PICO 中沒有任何 MeSH terms，無法建構搜尋式。", file=sys.stderr)
+            sys.exit(1)
+        if args.output:
+            output_path = Path(args.output)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            content = "# PubMed 搜尋策略 — Fallback Chain\n\n"
+            for item in chain:
+                content += f"## Tier {item['tier']}: {item['label']}\n\n```\n{item['query']}\n```\n\n"
+                if args.url:
+                    url = build_eutils_url(item["query"], args.retmax)
+                    content += f"URL: `{url}`\n\n"
+            output_path.write_text(content, encoding="utf-8")
+            print(f"搜尋策略已產生：{output_path}")
+        else:
+            for item in chain:
+                tier_num = item["tier"]
+                label = item["label"]
+                print(f"═══ Tier {tier_num}: {label} ═══\n")
+                print(item["query"])
+                if args.url:
+                    url = build_eutils_url(item["query"], args.retmax)
+                    print(f"\nURL: {url}")
+                print()
+        sys.exit(0)
+
+    # ── Single tier mode ──
+    query = build_query(pico_data, **build_kwargs, tier=args.tier)
 
     if not query:
         print("警告：PICO 中沒有任何 MeSH terms，無法建構搜尋式。", file=sys.stderr)

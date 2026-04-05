@@ -1,10 +1,13 @@
 """Tests for build_search_query.py — PubMed query construction."""
 
 from scripts.build_search_query import (
+    PUB_FILTER_CHAIN,
     _expand_mesh_term,
+    _resolve_pub_filter,
     _split_mesh_terms,
     build_eutils_url,
     build_query,
+    build_query_chain,
     lookup_department_mesh,
     parse_departments,
 )
@@ -139,58 +142,136 @@ class TestBuildQuery:
         assert "lang" not in query
 
 
-class TestPubFilters:
-    """Verify each question type maps to the correct evidence hierarchy filters."""
+class TestFallbackChain:
+    """Verify the tier-based fallback chain for each question type."""
 
-    def _query_with_type(self, q_type):
-        return build_query({"pico": {"p": {"mesh": "Test[MeSH]"}}}, q_type=q_type)
+    def _query(self, q_type, tier=0):
+        return build_query({"pico": {"p": {"mesh": "Test[MeSH]"}}}, q_type=q_type, tier=tier)
 
-    def test_therapeutic_has_rct_ma_sr(self):
-        q = self._query_with_type("therapeutic")
+    # ── Tier 0: strictest (highest evidence) ──
+
+    def test_therapeutic_tier0_has_rct_ma_sr(self):
+        q = self._query("therapeutic", tier=0)
         assert "Randomized Controlled Trial[pt]" in q
         assert "Meta-Analysis[pt]" in q
         assert "Systematic Review[pt]" in q
+        assert "Case-Control" not in q
 
-    def test_preventive_has_rct_ma_sr(self):
-        q = self._query_with_type("preventive")
+    def test_preventive_tier0_has_rct_ma_sr(self):
+        q = self._query("preventive", tier=0)
         assert "Randomized Controlled Trial[pt]" in q
-        assert "Meta-Analysis[pt]" in q
-        assert "Systematic Review[pt]" in q
+        assert "Case-Control" not in q
 
-    def test_diagnostic_has_prospective_and_reference_standard(self):
-        q = self._query_with_type("diagnostic")
-        assert "Sensitivity and Specificity[MeSH]" in q
-        assert "Cross-Sectional Studies[MeSH]" in q
+    def test_diagnostic_tier0_has_prospective_gold_standard(self):
+        q = self._query("diagnostic", tier=0)
         assert "Prospective Studies[MeSH]" in q
         assert "Reference Standards[MeSH]" in q
-        assert "Meta-Analysis[pt]" in q
+        assert "Sensitivity and Specificity[MeSH]" in q
         assert "Systematic Review[pt]" in q
-
-    def test_prognostic_has_cohort_and_case_control(self):
-        q = self._query_with_type("prognostic")
-        assert "Cohort Studies[MeSH]" in q
-        assert "Prognosis[MeSH]" in q
-        assert "Case-Control Studies[MeSH]" in q
         assert "Meta-Analysis[pt]" in q
-        assert "Systematic Review[pt]" in q
 
-    def test_etiology_harm_has_cohort_case_control_risk(self):
-        q = self._query_with_type("etiology_harm")
+    def test_prognostic_tier0_has_cohort(self):
+        q = self._query("prognostic", tier=0)
         assert "Cohort Studies[MeSH]" in q
-        assert "Case-Control Studies[MeSH]" in q
+        assert "Systematic Review[pt]" in q
+        assert "Case-Control" not in q
+
+    def test_etiology_tier0_has_cohort(self):
+        q = self._query("etiology_harm", tier=0)
+        assert "Cohort Studies[MeSH]" in q
+        assert "Systematic Review[pt]" in q
+        assert "Case-Control" not in q
+
+    # ── Tier 1: relaxed ──
+
+    def test_therapeutic_tier1_adds_cohort(self):
+        q = self._query("therapeutic", tier=1)
+        assert "Randomized Controlled Trial[pt]" in q  # tier 0 included
+        assert "Cohort Studies[MeSH]" in q  # tier 1 added
+
+    def test_diagnostic_tier1_adds_cross_sectional(self):
+        q = self._query("diagnostic", tier=1)
+        assert "Cross-Sectional Studies[MeSH]" in q
+
+    def test_prognostic_tier1_adds_case_control(self):
+        q = self._query("prognostic", tier=1)
+        assert "Cohort Studies[MeSH]" in q  # tier 0
+        assert "Case-Control Studies[MeSH]" in q  # tier 1
+
+    def test_etiology_tier1_adds_case_control(self):
+        q = self._query("etiology_harm", tier=1)
+        assert "Cohort Studies[MeSH]" in q  # tier 0
+        assert "Case-Control Studies[MeSH]" in q  # tier 1
         assert "Risk Factors[MeSH]" in q
-        assert "Meta-Analysis[pt]" in q
-        assert "Systematic Review[pt]" in q
 
-    def test_all_types_have_systematic_review(self):
-        for q_type in ["therapeutic", "preventive", "diagnostic", "prognostic", "etiology_harm"]:
-            q = self._query_with_type(q_type)
-            assert "Systematic Review[pt]" in q, f"{q_type} missing Systematic Review"
+    # ── Tier 2: broadest ──
 
-    def test_all_types_have_meta_analysis(self):
-        for q_type in ["therapeutic", "preventive", "diagnostic", "prognostic", "etiology_harm"]:
-            q = self._query_with_type(q_type)
-            assert "Meta-Analysis[pt]" in q, f"{q_type} missing Meta-Analysis"
+    def test_therapeutic_tier2_adds_case_control(self):
+        q = self._query("therapeutic", tier=2)
+        assert "Case-Control Studies[MeSH]" in q
+        assert "Observational Study[pt]" in q
+
+    def test_prognostic_tier2_adds_case_reports(self):
+        q = self._query("prognostic", tier=2)
+        assert "Case Reports[pt]" in q
+
+    # ── Chain structure ──
+
+    def test_all_types_have_3_tiers(self):
+        for q_type in PUB_FILTER_CHAIN:
+            assert len(PUB_FILTER_CHAIN[q_type]) == 3, f"{q_type} should have 3 tiers"
+
+    def test_all_tier0_have_sr_and_ma(self):
+        for q_type in PUB_FILTER_CHAIN:
+            tier0 = PUB_FILTER_CHAIN[q_type][0]
+            assert "Systematic Review[pt]" in tier0, f"{q_type} tier 0 missing SR"
+            assert "Meta-Analysis[pt]" in tier0, f"{q_type} tier 0 missing MA"
+
+    # ── _resolve_pub_filter ──
+
+    def test_resolve_tier0(self):
+        f = _resolve_pub_filter("therapeutic", 0)
+        assert f == PUB_FILTER_CHAIN["therapeutic"][0]
+
+    def test_resolve_tier1_merges(self):
+        f = _resolve_pub_filter("therapeutic", 1)
+        # Should contain both tier 0 and tier 1 content
+        assert "Randomized Controlled Trial[pt]" in f
+        assert "Cohort Studies[MeSH]" in f
+
+    def test_resolve_unknown_type(self):
+        assert _resolve_pub_filter("unknown_type", 0) == ""
+
+    # ── build_query_chain ──
+
+    def test_build_query_chain_returns_all_tiers(self):
+        pico_data = {
+            "pico": {"p": {"mesh": "Test[MeSH]"}},
+            "classification": {"type": "therapeutic"},
+        }
+        chain = build_query_chain(pico_data)
+        assert len(chain) == 3
+        assert chain[0]["tier"] == 0
+        assert chain[1]["tier"] == 1
+        assert chain[2]["tier"] == 2
+        assert all("label" in item for item in chain)
+        assert all("query" in item for item in chain)
+
+    def test_chain_tier0_is_strictest(self):
+        pico_data = {
+            "pico": {"p": {"mesh": "Test[MeSH]"}},
+            "classification": {"type": "prognostic"},
+        }
+        chain = build_query_chain(pico_data)
+        # Tier 0 should NOT contain Case-Control
+        assert "Case-Control" not in chain[0]["query"]
+        # Tier 1 should contain Case-Control
+        assert "Case-Control" in chain[1]["query"]
+
+    def test_chain_no_type_returns_single(self):
+        pico_data = {"pico": {"p": {"mesh": "Test[MeSH]"}}}
+        chain = build_query_chain(pico_data)
+        assert len(chain) == 1  # no q_type → no filter chain, just base query
 
 
 class TestExpandMeshTerm:
