@@ -48,6 +48,7 @@ AND [問題類型對應的 publication type filter]
 3. 在搜尋框填入 PICO 關鍵字
 4. `mcp__plugin_playwright_playwright__browser_click` 執行搜尋
 5. `mcp__plugin_playwright_playwright__browser_snapshot` 擷取結果
+6. **📸 截圖：** `mcp__plugin_playwright_playwright__browser_screenshot` 截取搜尋結果頁面，存為 `PROJECT_DIR/assets/screenshots/cochrane-search-{timestamp}.png`
 
 **備用方法 — PubMed 搜 Cochrane 期刊:**
 如果 Playwright 失敗，使用 `search_articles`:
@@ -62,6 +63,12 @@ AND [問題類型對應的 publication type filter]
 - sort: relevance
 
 使用 `mcp__claude_ai_PubMed__get_article_metadata` 取得每篇詳細資訊。
+
+**搜尋完成後截圖：**
+1. 開啟 PubMed 搜尋結果頁面：`mcp__plugin_playwright_playwright__browser_navigate` 到 `https://pubmed.ncbi.nlm.nih.gov/?term={URL_encoded_query}`
+2. **📸 截圖搜尋結果：** `mcp__plugin_playwright_playwright__browser_screenshot` → 存為 `PROJECT_DIR/assets/screenshots/pubmed-search-{timestamp}.png`
+3. 如有設定篩選器（Article Type / Date 等），展開篩選面板後再截一張：
+   **📸 截圖篩選器：** → 存為 `PROJECT_DIR/assets/screenshots/pubmed-filters-{timestamp}.png`
 
 **Fallback 方法 — WebSearch + WebFetch（PubMed MCP 不可用時）:**
 
@@ -148,6 +155,11 @@ Included: 最終納入文獻數
 
 整理出：研究設計、方法、主要結果、結論
 
+**📸 截圖選定文獻摘要：** 對每篇選定的文獻（最多 3 篇）：
+1. `mcp__plugin_playwright_playwright__browser_navigate` 到 `https://pubmed.ncbi.nlm.nih.gov/<PMID>/`
+2. `mcp__plugin_playwright_playwright__browser_screenshot` → 存為 `PROJECT_DIR/assets/screenshots/article-abstract-{n}-{timestamp}.png`
+3. 將截圖記錄加入 `PROJECT_DIR/assets/screenshots.json`
+
 ## 輸出格式
 
 ```
@@ -219,6 +231,11 @@ Identification: N 篇 → Screening: N 篇 → Eligibility: N 篇 → Included: 
   - `prisma_flow.md` — PRISMA 篩選流程（Identification → Screening → Eligibility → Included）
   - `candidates.csv` — 候選文獻表格（標題、期刊、年份、研究類型、樣本數、PMID）
   - `selected_articles.md` — 最終選定的文獻（含選文理由、完整 metadata）
+- **截圖產出：** 存入 `PROJECT_DIR/assets/screenshots/`，清單記錄於 `PROJECT_DIR/assets/screenshots.json`：
+  - `pubmed-search-*.png` — PubMed 搜尋結果頁面（必要）
+  - `pubmed-filters-*.png` — PubMed 篩選器設定（選擇性）
+  - `cochrane-search-*.png` — Cochrane 搜尋結果（選擇性）
+  - `article-abstract-{n}-*.png` — 選定文獻摘要頁面（必要，每篇各一張）
 - **獨立呼叫 `/lit-search` 時：** 先詢問使用者專案名稱（或使用 `projects/` 下最近修改的專案），再寫入對應的 `projects/<name>/02_acquire/` 目錄。如果目錄不存在，先建立之。
 
 ### 輔助腳本

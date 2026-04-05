@@ -38,14 +38,57 @@ triggers:
 - Diagnostic → `data/references/casp-diagnostic-template.csv` → `PROJECT_DIR/03_appraise/appraisal.csv`
 - 其他類型 → 依 `data/appraisal-tools.md` 對照，使用最接近的模板
 
-### 2. 逐題評讀
+### 2. 文獻關鍵內容截圖
+
+在開始逐題評讀之前，先對文獻的關鍵章節進行截圖，作為評讀佐證和簡報素材。
+
+**截圖流程（使用 Playwright MCP）：**
+
+若文獻有 PMC 全文，使用 `mcp__plugin_playwright_playwright__browser_navigate` 開啟 PMC 全文頁面（`https://www.ncbi.nlm.nih.gov/pmc/articles/PMC<id>/`），依序截取：
+
+#### 2a. Methods 章節截圖
+1. 滾動到 Methods 章節
+2. **📸 截圖：** `mcp__plugin_playwright_playwright__browser_screenshot` → `PROJECT_DIR/assets/screenshots/article-methods-{n}-{timestamp}.png`
+3. 重點：研究設計、隨機化方法、盲化、樣本數計算
+
+#### 2b. Results 章節截圖
+1. 滾動到 Results 章節
+2. **📸 截圖關鍵數據：** → `PROJECT_DIR/assets/screenshots/article-results-{n}-{timestamp}.png`
+3. 重點：Primary outcome 數據、HR/OR/RR + 95% CI + p-value
+
+#### 2c. 圖表截圖（依文獻類型）
+根據研究設計，截取關鍵圖表：
+
+| 研究類型 | 需截取的圖表 | 檔名 |
+|---------|------------|------|
+| SR / Meta-Analysis | Forest Plot | `forest-plot-{n}-{timestamp}.png` |
+| RCT / Cohort | Kaplan-Meier 曲線 | `kaplan-meier-{n}-{timestamp}.png` |
+| Diagnostic | ROC 曲線 | `roc-curve-{n}-{timestamp}.png` |
+| 所有類型 | Table 1（基線特徵）| `table-baseline-{n}-{timestamp}.png` |
+| 所有類型 | 結果數據表格 | `table-outcomes-{n}-{timestamp}.png` |
+
+截取方式：在 PMC 全文中找到圖表 → `mcp__plugin_playwright_playwright__browser_screenshot` 截取 → 存入 `PROJECT_DIR/assets/screenshots/`
+
+#### 2d. COI / Funding 截圖
+1. 滾動到 Conflict of Interest / Funding 聲明
+2. **📸 截圖：** → `PROJECT_DIR/assets/screenshots/coi-disclosure-{n}-{timestamp}.png`
+3. **📸 截圖：** → `PROJECT_DIR/assets/screenshots/funding-source-{n}-{timestamp}.png`
+
+**如果 PMC 全文不可用：**
+- 使用 PubMed 摘要頁面截圖作為替代
+- 在評讀中標註「無法取得全文截圖，以摘要頁面替代」
+- 提示使用者可手動補充全文截圖
+
+**截圖完成後：** 將所有截圖記錄加入 `PROJECT_DIR/assets/screenshots.json`
+
+### 3. 逐題評讀
 
 依選用工具，**逐題**帶使用者走過 checklist。
 
 每一題的處理流程：
 1. 顯示題目（中英對照）
 2. 從文獻中找出相關證據
-3. 引用文獻原文佐證
+3. 引用文獻原文佐證（附上對應截圖的檔名參照，如 `→ 見截圖 article-methods-1-*.png`）
 4. 提出判定建議（Yes / No / Can't tell）
 5. 請使用者確認或修改判定
 
@@ -93,7 +136,7 @@ RCT 範例：
 
 每個 Domain 判定：Low risk / Some concerns / High risk of bias
 
-### 3. 評讀結果總結
+### 4. 評讀結果總結
 
 整理為總結表格：
 
@@ -112,7 +155,7 @@ Section C (Applicability): [適用 / 部分適用 / 不適用]
 OCEBM Level of Evidence: [Level 1-5]
 ```
 
-### 4. 研究結果呈現
+### 5. 研究結果呈現
 
 詳細整理文獻的關鍵結果：
 - Primary outcome + 數據
@@ -122,7 +165,7 @@ OCEBM Level of Evidence: [Level 1-5]
 - HR / OR / RR + 95% CI + p-value
 - 重要圖表描述（Forest Plot, Kaplan-Meier, ROC 等）
 
-### 5. GRADE 評定（選擇性）
+### 6. GRADE 評定（選擇性）
 
 如使用者需要，進行 GRADE 評定：
 - 從 High 開始
@@ -199,6 +242,16 @@ Q2: Was the assignment of participants to interventions randomised?
   - `coi_check.md` — 利益衝突檢核結果（經費來源、作者隸屬、利益揭露、判定）
   - `results_summary.md` — 評讀結果總結（含 Section A/B/C 判定、整體結論、OCEBM Level）
   - `grade.md`（選擇性）— GRADE 評定結果（若使用者要求）
+- **截圖產出：** 存入 `PROJECT_DIR/assets/screenshots/`，清單記錄於 `PROJECT_DIR/assets/screenshots.json`：
+  - `article-methods-{n}-*.png` — Methods 章節（必要）
+  - `article-results-{n}-*.png` — Results 關鍵數據（必要）
+  - `forest-plot-{n}-*.png` — Forest Plot（SR/MA 時）
+  - `kaplan-meier-{n}-*.png` — Kaplan-Meier 曲線（RCT/Cohort 時）
+  - `roc-curve-{n}-*.png` — ROC 曲線（Diagnostic 時）
+  - `table-baseline-{n}-*.png` — Table 1 基線特徵
+  - `table-outcomes-{n}-*.png` — 結果數據表格
+  - `coi-disclosure-{n}-*.png` — COI 聲明
+  - `funding-source-{n}-*.png` — 經費來源聲明
 - **獨立呼叫 `/appraise` 時：** 先詢問使用者專案名稱（或使用 `projects/` 下最近修改的專案），再寫入對應的 `projects/<name>/03_appraise/` 目錄。如果目錄不存在，先建立之。
 
 ### 輔助腳本

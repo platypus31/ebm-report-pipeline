@@ -72,9 +72,19 @@ projects/<name>/
 │   └── clinical_reply.md      # 去學術化臨床回覆
 ├── 05_audit/                  # AUDIT — 自我評估
 │   └── self_assessment.md     # 五面向自我評估
-└── 06_slides/                 # 簡報輸出
-    ├── slides.json            # 簡報資料（JSON）
-    └── ebm-report.pptx        # PowerPoint 檔案
+├── 06_slides/                 # 簡報輸出
+│   ├── slides.json            # 簡報資料（JSON）
+│   └── ebm-report.pptx        # PowerPoint 檔案
+└── assets/                    # 截圖與附件
+    ├── screenshots.json       # 截圖清單與 metadata
+    └── screenshots/           # Playwright 自動截圖
+        ├── pubmed-search-*.png      # PubMed 搜尋結果
+        ├── article-abstract-*.png   # 文獻摘要頁面
+        ├── article-methods-*.png    # Methods 章節
+        ├── article-results-*.png    # Results 關鍵數據
+        ├── forest-plot-*.png        # Forest Plot
+        ├── kaplan-meier-*.png       # KM 曲線
+        └── table-baseline-*.png     # Table 1
 ```
 
 ## 實體腳本
@@ -90,6 +100,7 @@ projects/<name>/
 | `scripts/export_appraisal.py` | 將評讀 JSON 匯出為結構化 CSV |
 | `scripts/build_slide_outline.py` | 從專案檔案自動組裝 slides.json |
 | `scripts/generate_pptx.py` | python-pptx fallback 簡報產生器 |
+| `scripts/screenshot.py` | 截圖管理工具（初始化、列表、完整性檢查）|
 | `scripts/status.py` | 專案進度儀表板 |
 
 ## 品質門檻
@@ -168,6 +179,7 @@ ebm-report-pipeline/
 │   ├── build_slide_outline.py         # 自動組裝簡報大綱
 │   ├── generate_pptx.py              # PowerPoint 產生器
 │   ├── generate_platform_config.py    # 跨平台設定產生器
+│   ├── screenshot.py                  # 截圖管理工具
 │   └── status.py                      # 專案進度儀表板
 ├── data/                              # 參考資料（所有平台共用）
 │   ├── departments.md                 # 科別 MeSH 對照表
