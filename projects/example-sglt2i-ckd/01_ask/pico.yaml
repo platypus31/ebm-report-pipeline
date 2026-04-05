@@ -18,21 +18,26 @@ pico:
     zh: "65 歲以上第二型糖尿病合併慢性腎臟病（eGFR 25-60 mL/min/1.73m²）患者"
     mesh: '"Diabetes Mellitus, Type 2"[MeSH] AND "Renal Insufficiency, Chronic"[MeSH] AND "Aged"[MeSH]'
     detail: "排除 eGFR < 25 或已接受透析的患者"
+    keywords: ["68 歲", "糖尿病病史 15 年", "eGFR 38", "CKD stage 3b"]
   i:
     zh: "Dapagliflozin 10mg 每日一次"
     mesh: '"Sodium-Glucose Transporter 2 Inhibitors"[MeSH]'
     detail: "加上原有的標準糖尿病照護"
+    keywords: ["加入 SGLT2 抑制劑", "如 Dapagliflozin"]
   c:
     zh: "安慰劑（加上標準糖尿病照護）"
     mesh: '"Placebos"[MeSH]'
     detail: "所有受試者維持原有 ACEi/ARB、降血糖藥物"
+    keywords: ["已使用 Metformin", "Glimepiride", "ARB 最大劑量"]
   o:
     primary:
       zh: "腎功能惡化（eGFR 持續下降 ≥50%、末期腎病或腎臟相關死亡之複合結局）"
       mesh: '"Glomerular Filtration Rate"[MeSH], "Kidney Failure, Chronic"[MeSH]'
+      keywords: ["腎功能持續惡化", "eGFR 下降 8 mL/min/年"]
     secondary:
       zh: "心血管死亡或心衰住院之複合結局"
       mesh: '"Cardiovascular Diseases"[MeSH], "Heart Failure"[MeSH]'
+      keywords: ["蛋白尿明顯", "UACR 850"]
 
 classification:
   type: "therapeutic"

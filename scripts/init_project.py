@@ -44,19 +44,24 @@ pico:
   p:
     zh: ""
     mesh: ""
+    keywords: []
   i:
     zh: ""
     mesh: ""
+    keywords: []
   c:
     zh: ""
     mesh: ""
+    keywords: []
   o:
     primary:
       zh: ""
       mesh: ""
+      keywords: []
     secondary:
       zh: ""
       mesh: ""
+      keywords: []
 
 classification:
   type: ""          # therapeutic / preventive / diagnostic / prognostic / etiology_harm
