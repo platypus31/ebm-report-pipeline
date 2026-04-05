@@ -139,6 +139,60 @@ class TestBuildQuery:
         assert "lang" not in query
 
 
+class TestPubFilters:
+    """Verify each question type maps to the correct evidence hierarchy filters."""
+
+    def _query_with_type(self, q_type):
+        return build_query({"pico": {"p": {"mesh": "Test[MeSH]"}}}, q_type=q_type)
+
+    def test_therapeutic_has_rct_ma_sr(self):
+        q = self._query_with_type("therapeutic")
+        assert "Randomized Controlled Trial[pt]" in q
+        assert "Meta-Analysis[pt]" in q
+        assert "Systematic Review[pt]" in q
+
+    def test_preventive_has_rct_ma_sr(self):
+        q = self._query_with_type("preventive")
+        assert "Randomized Controlled Trial[pt]" in q
+        assert "Meta-Analysis[pt]" in q
+        assert "Systematic Review[pt]" in q
+
+    def test_diagnostic_has_prospective_and_reference_standard(self):
+        q = self._query_with_type("diagnostic")
+        assert "Sensitivity and Specificity[MeSH]" in q
+        assert "Cross-Sectional Studies[MeSH]" in q
+        assert "Prospective Studies[MeSH]" in q
+        assert "Reference Standards[MeSH]" in q
+        assert "Meta-Analysis[pt]" in q
+        assert "Systematic Review[pt]" in q
+
+    def test_prognostic_has_cohort_and_case_control(self):
+        q = self._query_with_type("prognostic")
+        assert "Cohort Studies[MeSH]" in q
+        assert "Prognosis[MeSH]" in q
+        assert "Case-Control Studies[MeSH]" in q
+        assert "Meta-Analysis[pt]" in q
+        assert "Systematic Review[pt]" in q
+
+    def test_etiology_harm_has_cohort_case_control_risk(self):
+        q = self._query_with_type("etiology_harm")
+        assert "Cohort Studies[MeSH]" in q
+        assert "Case-Control Studies[MeSH]" in q
+        assert "Risk Factors[MeSH]" in q
+        assert "Meta-Analysis[pt]" in q
+        assert "Systematic Review[pt]" in q
+
+    def test_all_types_have_systematic_review(self):
+        for q_type in ["therapeutic", "preventive", "diagnostic", "prognostic", "etiology_harm"]:
+            q = self._query_with_type(q_type)
+            assert "Systematic Review[pt]" in q, f"{q_type} missing Systematic Review"
+
+    def test_all_types_have_meta_analysis(self):
+        for q_type in ["therapeutic", "preventive", "diagnostic", "prognostic", "etiology_harm"]:
+            q = self._query_with_type(q_type)
+            assert "Meta-Analysis[pt]" in q, f"{q_type} missing Meta-Analysis"
+
+
 class TestExpandMeshTerm:
     def test_quoted_mesh(self):
         result = _expand_mesh_term('"Kidney Diseases"[MeSH]')

@@ -26,12 +26,33 @@ except ImportError:
     yaml = None
 
 # Publication type filters by question type
+# 每個類型包含該類型最佳證據設計 + Meta-Analysis + Systematic Review
 PUB_FILTERS = {
-    "therapeutic": '(Randomized Controlled Trial[pt] OR Meta-Analysis[pt] OR Systematic Review[pt])',
-    "preventive": '(Randomized Controlled Trial[pt] OR Meta-Analysis[pt] OR Systematic Review[pt])',
-    "diagnostic": '((Sensitivity and Specificity[MeSH]) OR (Cross-Sectional Studies[MeSH]) OR Systematic Review[pt])',
-    "prognostic": '(Cohort Studies[MeSH] OR Prognosis[MeSH] OR Systematic Review[pt])',
-    "etiology_harm": '(Cohort Studies[MeSH] OR Case-Control Studies[MeSH] OR Risk Factors[MeSH] OR Systematic Review[pt])',
+    # 治療型：RCT 為最佳證據
+    "therapeutic": (
+        '(Randomized Controlled Trial[pt] OR Meta-Analysis[pt] OR Systematic Review[pt])'
+    ),
+    # 預防型：同治療型，RCT 為最佳證據
+    "preventive": (
+        '(Randomized Controlled Trial[pt] OR Meta-Analysis[pt] OR Systematic Review[pt])'
+    ),
+    # 診斷型：Prospective blinded cross-sectional + gold standard comparison
+    "diagnostic": (
+        '((Sensitivity and Specificity[MeSH]) OR (Cross-Sectional Studies[MeSH])'
+        ' OR (Prospective Studies[MeSH]) OR (Reference Standards[MeSH])'
+        ' OR Meta-Analysis[pt] OR Systematic Review[pt])'
+    ),
+    # 預後型：Cohort > Case-control > Case series
+    "prognostic": (
+        '(Cohort Studies[MeSH] OR Prognosis[MeSH]'
+        ' OR Case-Control Studies[MeSH]'
+        ' OR Meta-Analysis[pt] OR Systematic Review[pt])'
+    ),
+    # 病因傷害型：Cohort > Case-control > Case series
+    "etiology_harm": (
+        '(Cohort Studies[MeSH] OR Case-Control Studies[MeSH] OR Risk Factors[MeSH]'
+        ' OR Meta-Analysis[pt] OR Systematic Review[pt])'
+    ),
 }
 
 LANG_FILTERS = {

@@ -37,15 +37,15 @@ Randomized Controlled Trial[pt] OR Meta-Analysis[pt] OR Systematic Review[pt]
 ## 診斷型 (Diagnostic)
 
 **最佳證據層級：**
-1. Systematic Review of prospective blind comparison studies
-2. Prospective, blind comparison with gold standard
+1. Systematic Review / Meta-analysis of prospective blind comparison studies
+2. Prospective, blind comparison with gold standard (reference standard)
 3. Retrospective study with consistent reference standard
 4. Case-control study
 5. Case series
 
 **PubMed filter:**
 ```
-(Sensitivity and Specificity[MeSH]) OR (Cross-Sectional Studies[MeSH]) OR Systematic Review[pt]
+(Sensitivity and Specificity[MeSH]) OR (Cross-Sectional Studies[MeSH]) OR (Prospective Studies[MeSH]) OR (Reference Standards[MeSH]) OR Meta-Analysis[pt] OR Systematic Review[pt]
 ```
 
 ---
@@ -53,7 +53,7 @@ Randomized Controlled Trial[pt] OR Meta-Analysis[pt] OR Systematic Review[pt]
 ## 預後型 (Prognostic)
 
 **最佳證據層級：**
-1. Systematic Review of inception cohort studies
+1. Systematic Review / Meta-analysis of inception cohort studies
 2. Inception cohort study
 3. Cohort study (non-inception)
 4. Case-control study
@@ -61,7 +61,7 @@ Randomized Controlled Trial[pt] OR Meta-Analysis[pt] OR Systematic Review[pt]
 
 **PubMed filter:**
 ```
-Cohort Studies[MeSH] OR Prognosis[MeSH] OR Systematic Review[pt]
+Cohort Studies[MeSH] OR Prognosis[MeSH] OR Case-Control Studies[MeSH] OR Meta-Analysis[pt] OR Systematic Review[pt]
 ```
 
 ---
@@ -69,7 +69,7 @@ Cohort Studies[MeSH] OR Prognosis[MeSH] OR Systematic Review[pt]
 ## 病因傷害型 (Etiology/Harm)
 
 **最佳證據層級：**
-1. Systematic Review of cohort studies
+1. Systematic Review / Meta-analysis of cohort studies
 2. Individual cohort study
 3. Case-control study
 4. Case series
@@ -77,5 +77,5 @@ Cohort Studies[MeSH] OR Prognosis[MeSH] OR Systematic Review[pt]
 
 **PubMed filter:**
 ```
-Cohort Studies[MeSH] OR Case-Control Studies[MeSH] OR Risk Factors[MeSH] OR Systematic Review[pt]
+Cohort Studies[MeSH] OR Case-Control Studies[MeSH] OR Risk Factors[MeSH] OR Meta-Analysis[pt] OR Systematic Review[pt]
 ```
