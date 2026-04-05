@@ -38,101 +38,95 @@ triggers:
 - Diagnostic → `data/references/casp-diagnostic-template.csv` → `PROJECT_DIR/03_appraise/appraisal.csv`
 - 其他類型 → 依 `data/appraisal-tools.md` 對照，使用最接近的模板
 
-### 2. 文獻關鍵內容截圖
+### 2. 逐題評讀 + 即時截圖
 
-在開始逐題評讀之前，先對文獻的關鍵章節進行截圖，作為評讀佐證和簡報素材。
+依選用工具，**逐題**帶使用者走過 checklist。每一題評讀時，**同時截取該題佐證所在的文獻段落**。
 
-**截圖流程（使用 Playwright MCP）：**
+#### 截圖方式
 
-若文獻有 PMC 全文，使用 `mcp__plugin_playwright_playwright__browser_navigate` 開啟 PMC 全文頁面（`https://www.ncbi.nlm.nih.gov/pmc/articles/PMC<id>/`），依序截取：
+**首選 — Playwright MCP 自動截圖：**
 
-#### 2a. Methods 章節截圖
-1. 滾動到 Methods 章節
-2. **📸 截圖：** `mcp__plugin_playwright_playwright__browser_screenshot` → `PROJECT_DIR/assets/screenshots/article-methods-{n}-{timestamp}.png`
-3. 重點：研究設計、隨機化方法、盲化、樣本數計算
+評讀開始前，先開啟文獻全文頁面：
+- PMC 全文：`mcp__plugin_playwright_playwright__browser_navigate` → `https://www.ncbi.nlm.nih.gov/pmc/articles/PMC<id>/`
+- 期刊網站全文：直接開啟 DOI 連結
 
-#### 2b. Results 章節截圖
-1. 滾動到 Results 章節
-2. **📸 截圖關鍵數據：** → `PROJECT_DIR/assets/screenshots/article-results-{n}-{timestamp}.png`
-3. 重點：Primary outcome 數據、HR/OR/RR + 95% CI + p-value
+每一題評讀時：
+1. 用 `mcp__plugin_playwright_playwright__browser_snapshot` 定位相關段落
+2. 用 `mcp__plugin_playwright_playwright__browser_click` 或 JavaScript 滾動到對應位置
+3. 用 `mcp__plugin_playwright_playwright__browser_screenshot` 截取該段落
+4. 截圖存入 `PROJECT_DIR/assets/screenshots/`，記錄到 `screenshots.json`
 
-#### 2c. 圖表截圖（依文獻類型）
-根據研究設計，截取關鍵圖表：
+**Fallback — 截圖指引（Playwright 不可用時）：**
 
-| 研究類型 | 需截取的圖表 | 檔名 |
-|---------|------------|------|
-| SR / Meta-Analysis | Forest Plot | `forest-plot-{n}-{timestamp}.png` |
-| RCT / Cohort | Kaplan-Meier 曲線 | `kaplan-meier-{n}-{timestamp}.png` |
-| Diagnostic | ROC 曲線 | `roc-curve-{n}-{timestamp}.png` |
-| 所有類型 | Table 1（基線特徵）| `table-baseline-{n}-{timestamp}.png` |
-| 所有類型 | 結果數據表格 | `table-outcomes-{n}-{timestamp}.png` |
+如果無法自動截圖（Playwright MCP 不可用、無全文存取等），在每題評讀的佐證後面附上**截圖指引**，告訴報告人應該去哪裡截圖：
 
-截取方式：在 PMC 全文中找到圖表 → `mcp__plugin_playwright_playwright__browser_screenshot` 截取 → 存入 `PROJECT_DIR/assets/screenshots/`
+```
+📸 截圖指引：請到全文 Methods 第 3 段（"Randomization" 小標題處），
+   截取從 "Patients were randomly assigned..." 到 "...stratified by diabetes status" 的段落。
+   建議檔名：article-methods-1.png
+```
 
-#### 2d. COI / Funding 截圖
-1. 滾動到 Conflict of Interest / Funding 聲明
-2. **📸 截圖：** → `PROJECT_DIR/assets/screenshots/coi-disclosure-{n}-{timestamp}.png`
-3. **📸 截圖：** → `PROJECT_DIR/assets/screenshots/funding-source-{n}-{timestamp}.png`
+評讀結束後，將所有截圖指引整合成一份 `PROJECT_DIR/03_appraise/screenshot_guide.md`。
 
-**如果 PMC 全文不可用：**
-- 使用 PubMed 摘要頁面截圖作為替代
-- 在評讀中標註「無法取得全文截圖，以摘要頁面替代」
-- 提示使用者可手動補充全文截圖
-
-**截圖完成後：** 將所有截圖記錄加入 `PROJECT_DIR/assets/screenshots.json`
-
-### 3. 逐題評讀
-
-依選用工具，**逐題**帶使用者走過 checklist。
-
-每一題的處理流程：
-1. 顯示題目（中英對照）
-2. 從文獻中找出相關證據
-3. 引用文獻原文佐證（附上對應截圖的檔名參照，如 `→ 見截圖 article-methods-1-*.png`）
-4. 提出判定建議（Yes / No / Can't tell）
-5. 請使用者確認或修改判定
-
-#### CASP 評讀順序
+#### CASP RCT 評讀 — 每題對應截圖
 
 **Section A — Validity（效度）**
 
-RCT 範例：
-- Q1: Did the study address a clearly focused research question?
-  此研究是否問了一個清楚明確的問題？
-- Q2: Was the assignment of participants to interventions randomised?
-  受試者是否隨機分配？
-- Q3: Were all participants who entered the study accounted for at its conclusion?
-  是否所有受試者都被追蹤到研究結束？
-- Q4: Were the participants 'blind' to intervention they were given?
-  受試者是否盲化？
-- Q5: Were the groups similar at the start of the trial?
-  各組在研究開始時是否相似？
-- Q6: Were the groups treated equally?
-  各組是否受到同等對待？
+| 題號 | 題目 | 截圖位置 | 截圖檔名 |
+|------|------|---------|---------|
+| Q1 | Did the study address a clearly focused research question? 此研究是否問了一個清楚明確的問題？ | Abstract → Objective / Introduction 最後一段 | `article-objective-{n}.png` |
+| Q2 | Was the assignment of participants to interventions randomised? 受試者是否隨機分配？ | Methods → Randomization 段落 | `article-methods-{n}.png` |
+| Q3 | Were all participants accounted for at its conclusion? 是否所有受試者都被追蹤到結束？ | Results → Flow diagram / CONSORT / Participant flow | `article-flowchart-{n}.png` |
+| Q4 | Were the participants 'blind' to intervention? 受試者是否盲化？ | Methods → Blinding / Masking 段落 | `article-methods-{n}.png` |
+| Q5 | Were the groups similar at the start? 各組在開始時是否相似？ | Results → Table 1 (Baseline characteristics) | `table-baseline-{n}.png` |
+| Q6 | Were the groups treated equally? 各組是否受到同等對待？ | Methods → Procedures / Concomitant treatments | `article-methods-{n}.png` |
 
 **Section B — Results（結果）**
 
-- Q7: How large was the treatment effect?
-  治療效果有多大？（報告 HR/OR/RR + 95% CI）
-- Q8: How precise was the estimate of the treatment effect?
-  效果估計有多精確？（CI 寬窄評估）
+| 題號 | 題目 | 截圖位置 | 截圖檔名 |
+|------|------|---------|---------|
+| Q7 | How large was the treatment effect? 治療效果有多大？ | Results → Primary outcome 數據段落 + 主要結果圖表（Forest Plot / KM curve） | `article-results-{n}.png` + `forest-plot-{n}.png` 或 `kaplan-meier-{n}.png` |
+| Q8 | How precise was the estimate? 效果估計有多精確？ | Results → 95% CI 數據所在段落 | `article-results-{n}.png`（同 Q7）|
 
 **Section C — Applicability（適用性）**
 
-- Q9: Can the results be applied to the local population?
-  結果能否應用於本地族群？
-- Q10: Were all clinically important outcomes considered?
-  是否考慮所有臨床重要結果？
-- Q11: Are the benefits worth the harms and costs?
-  效益是否超過傷害和成本？
+| 題號 | 題目 | 截圖位置 | 截圖檔名 |
+|------|------|---------|---------|
+| Q9 | Can the results be applied locally? 結果能否應用於本地？ | Methods → Inclusion/Exclusion criteria | `article-methods-{n}.png` |
+| Q10 | Were all important outcomes considered? 是否考慮所有重要結果？ | Results → Secondary outcomes 表格 | `table-outcomes-{n}.png` |
+| Q11 | Are the benefits worth the harms and costs? 效益是否超過傷害？ | Results → Adverse events / Safety 段落 | `article-safety-{n}.png` |
+
+**額外必要截圖：**
+
+| 截圖內容 | 截圖位置 | 截圖檔名 |
+|---------|---------|---------|
+| COI 揭露聲明 | 文末 Conflict of Interest / Disclosures | `coi-disclosure-{n}.png` |
+| 經費來源 | 文末 Funding / Acknowledgments | `funding-source-{n}.png` |
+
+#### CASP 其他類型的截圖對應
+
+**SR/MA 額外截圖：**
+- Forest Plot（主要結局）→ `forest-plot-{n}.png`
+- Funnel Plot（發表偏差）→ `funnel-plot-{n}.png`
+- PRISMA flow（SR 的篩選流程）→ `sr-prisma-{n}.png`
+- Risk of Bias 圖（整體偏差風險）→ `rob-summary-{n}.png`
+
+**Diagnostic 額外截圖：**
+- ROC 曲線 → `roc-curve-{n}.png`
+- 2x2 table（TP/FP/TN/FN）→ `diagnostic-table-{n}.png`
+
+**Cohort / Case-Control 額外截圖：**
+- Adjusted analysis 表格（多變量校正結果）→ `adjusted-analysis-{n}.png`
 
 #### Cochrane RoB 2.0 評讀順序（如使用）
 
-- Domain 1: Randomization process
-- Domain 2: Deviations from intended interventions
-- Domain 3: Missing outcome data
-- Domain 4: Measurement of the outcome
-- Domain 5: Selection of reported result
+| Domain | 評估內容 | 截圖位置 |
+|--------|---------|---------|
+| D1 | Randomization process | Methods → Randomization + Allocation concealment |
+| D2 | Deviations from intended interventions | Methods → Blinding + Protocol deviations |
+| D3 | Missing outcome data | Results → Participant flow / Lost to follow-up |
+| D4 | Measurement of the outcome | Methods → Outcome assessment |
+| D5 | Selection of reported result | Methods → Statistical analysis + Protocol 比對 |
 
 每個 Domain 判定：Low risk / Some concerns / High risk of bias
 
@@ -202,7 +196,7 @@ OCEBM Level of Evidence: [Level 1-5]
 
 ## 範例輸出
 
-### 好的 CASP 評讀範例（單題）
+### 好的 CASP 評讀範例（單題 — 含截圖）
 
 ```
 Q2: Was the assignment of participants to interventions randomised?
@@ -215,6 +209,34 @@ Q2: Was the assignment of participants to interventions randomised?
   receive dapagliflozin (10 mg once daily) or matching placebo, with the use of
   a central interactive web-response system, stratified by diabetes status,
   UACR, and eGFR."
+
+  📸 → 見截圖 article-methods-1-20260405-143022.png
+
+分析:
+  - 使用中央電腦化隨機系統（interactive web-response system）→ 適當的隨機方法
+  - 有分層隨機（依糖尿病狀態、UACR、eGFR）→ 減少基線不平衡
+  - 1:1 分配比例明確
+  結論: 隨機化方法適當且有充分描述。
+```
+
+### 好的 CASP 評讀範例（截圖不可用時 — 含截圖指引）
+
+```
+Q2: Was the assignment of participants to interventions randomised?
+    受試者是否隨機分配？
+
+判定: Yes
+
+佐證:
+  文獻原文 (Methods, p.3): "Patients were randomly assigned in a 1:1 ratio to
+  receive dapagliflozin (10 mg once daily) or matching placebo, with the use of
+  a central interactive web-response system, stratified by diabetes status,
+  UACR, and eGFR."
+
+  📸 截圖指引：請到全文 Methods 章節，找到 "Randomization" 小標題，
+     截取從 "Patients were randomly assigned..." 到 "...stratified by diabetes
+     status, UACR, and eGFR." 的完整段落。
+     建議檔名：article-methods-1.png
 
 分析:
   - 使用中央電腦化隨機系統（interactive web-response system）→ 適當的隨機方法
@@ -232,7 +254,7 @@ Q2: Was the assignment of participants to interventions randomised?
 
 分析: 文章說有隨機分配。
 ```
-問題：沒有引用文獻原文、沒有說明隨機方法為何（電腦？信封？）、沒有評估隨機方法是否適當、分析過於簡略，無法讓讀者判斷評讀的可信度。
+問題：沒有引用文獻原文、沒有截圖佐證、沒有說明隨機方法為何（電腦？信封？）、沒有評估隨機方法是否適當、分析過於簡略。
 
 ## 檔案產出
 
@@ -242,16 +264,22 @@ Q2: Was the assignment of participants to interventions randomised?
   - `coi_check.md` — 利益衝突檢核結果（經費來源、作者隸屬、利益揭露、判定）
   - `results_summary.md` — 評讀結果總結（含 Section A/B/C 判定、整體結論、OCEBM Level）
   - `grade.md`（選擇性）— GRADE 評定結果（若使用者要求）
-- **截圖產出：** 存入 `PROJECT_DIR/assets/screenshots/`，清單記錄於 `PROJECT_DIR/assets/screenshots.json`：
-  - `article-methods-{n}-*.png` — Methods 章節（必要）
-  - `article-results-{n}-*.png` — Results 關鍵數據（必要）
+- **截圖產出（Playwright 可用時）：** 存入 `PROJECT_DIR/assets/screenshots/`，清單記錄於 `PROJECT_DIR/assets/screenshots.json`：
+  - `article-objective-{n}-*.png` — 研究目的段落（Q1 佐證）
+  - `article-methods-{n}-*.png` — Methods 章節（Q2/Q4/Q6/Q9 佐證）
+  - `article-flowchart-{n}-*.png` — CONSORT / 參與者流程圖（Q3 佐證）
+  - `table-baseline-{n}-*.png` — Table 1 基線特徵（Q5 佐證）
+  - `article-results-{n}-*.png` — Results 關鍵數據（Q7/Q8 佐證）
+  - `table-outcomes-{n}-*.png` — 結果數據表格（Q10 佐證）
+  - `article-safety-{n}-*.png` — 安全性/副作用段落（Q11 佐證）
   - `forest-plot-{n}-*.png` — Forest Plot（SR/MA 時）
   - `kaplan-meier-{n}-*.png` — Kaplan-Meier 曲線（RCT/Cohort 時）
   - `roc-curve-{n}-*.png` — ROC 曲線（Diagnostic 時）
-  - `table-baseline-{n}-*.png` — Table 1 基線特徵
-  - `table-outcomes-{n}-*.png` — 結果數據表格
   - `coi-disclosure-{n}-*.png` — COI 聲明
   - `funding-source-{n}-*.png` — 經費來源聲明
+- **截圖指引（Playwright 不可用時）：** 寫入 `PROJECT_DIR/03_appraise/screenshot_guide.md`
+  - 對每題 CASP 問題，列出應截取的文獻段落位置、關鍵字、建議檔名
+  - 報告人依此指引自行到全文中截取對應段落
 - **獨立呼叫 `/appraise` 時：** 先詢問使用者專案名稱（或使用 `projects/` 下最近修改的專案），再寫入對應的 `projects/<name>/03_appraise/` 目錄。如果目錄不存在，先建立之。
 
 ### 輔助腳本
