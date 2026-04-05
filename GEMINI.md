@@ -2,19 +2,19 @@
 
 PGY 住院醫師的 EBM (Evidence-Based Medicine) 報告互動式產生工具。從選科別到產出簡報的完整 5A 流程。
 
-## Skills
+## 技能指令
 
-| Command | File | 說明 |
-|---------|------|------|
-| `/ebm` | `skills/ebm.md` | 主進入點 — 完整 5A 框架 EBM 報告流程 |
-| `/brainstorm` | `skills/brainstorm.md` | 搜尋 PubMed 近期文獻，激發選題靈感 |
-| `/pico` | `skills/pico.md` | PICO 框架分析 |
-| `/classify` | `skills/classify.md` | 臨床問題分類（診斷/預後/治療/預防/病因傷害） |
-| `/lit-search` | `skills/lit-search.md` | 6S 階層文獻搜尋（PubMed + Cochrane + Embase） |
-| `/appraise` | `skills/appraise.md` | 嚴格評讀（CASP / RoB 2 / AMSTAR 2） |
-| `/ebm-slides` | `skills/ebm-slides.md` | 產生 EBM 簡報（Canva） |
-| `/save-progress` | `skills/save-progress.md` | 儲存目前 EBM 報告進度 |
-| `/load-progress` | `skills/load-progress.md` | 載入已儲存的進度並繼續 |
+| 指令 | 檔案 | 說明 |
+|------|------|------|
+| `ebm` | `skills/ebm.md` | 主進入點 — 完整 5A 框架 EBM 報告流程 |
+| `brainstorm` | `skills/brainstorm.md` | 搜尋 PubMed 近期文獻，激發選題靈感 |
+| `pico` | `skills/pico.md` | PICO 框架分析 |
+| `classify` | `skills/classify.md` | 臨床問題分類（診斷/預後/治療/預防/病因傷害） |
+| `lit-search` | `skills/lit-search.md` | 6S 階層文獻搜尋（PubMed + Cochrane + Embase） |
+| `appraise` | `skills/appraise.md` | 嚴格評讀（CASP / RoB 2 / AMSTAR 2） |
+| `ebm-slides` | `skills/ebm-slides.md` | 產生 EBM 簡報（Canva） |
+| `save-progress` | `skills/save-progress.md` | 儲存目前 EBM 報告進度 |
+| `load-progress` | `skills/load-progress.md` | 載入已儲存的進度並繼續 |
 
 ## 使用方式
 
@@ -22,11 +22,14 @@ PGY 住院醫師的 EBM (Evidence-Based Medicine) 報告互動式產生工具。
 
 ```bash
 cd ebm-report-pipeline
-claude
-> /ebm
+gemini
 ```
 
-系統會自動建立專案目錄、引導完成 5A 流程、每個步驟產出結構化檔案。
+然後請 Gemini 讀取 `skills/ebm.md` 來啟動完整 5A 流程：
+
+```
+> 請讀取 skills/ebm.md 並依照指示引導我完成 EBM 報告
+```
 
 ### 手動建立專案
 
@@ -34,13 +37,19 @@ claude
 python3 scripts/init_project.py --name my-topic --department 腎臟內科
 ```
 
-### 單獨使用子技能
+### 單獨使用技能
+
+請直接告訴 Gemini 讀取對應的 skill 檔案：
 
 ```
-> /brainstorm    # 只做選題
-> /pico          # 只做 PICO 分析
-> /lit-search    # 只做文獻搜尋
+> 請讀取 skills/brainstorm.md 並幫我選題
+> 請讀取 skills/pico.md 並幫我做 PICO 分析
+> 請讀取 skills/lit-search.md 並幫我搜尋文獻
 ```
+
+### 使用 /memory 管理上下文
+
+Gemini CLI 會自動載入本檔案。可用 `/memory show` 查看目前載入的上下文。
 
 ## 專案結構
 
@@ -72,19 +81,9 @@ projects/<name>/
 │   └── clinical_reply.md      # 去學術化臨床回覆
 ├── 05_audit/                  # AUDIT — 自我評估
 │   └── self_assessment.md     # 五面向自我評估
-├── 06_slides/                 # 簡報輸出
-│   ├── slides.json            # 簡報資料（JSON）
-│   └── ebm-report.pptx        # PowerPoint 檔案
-└── assets/                    # 截圖與附件
-    ├── screenshots.json       # 截圖清單與 metadata
-    └── screenshots/           # Playwright 自動截圖
-        ├── pubmed-search-*.png      # PubMed 搜尋結果
-        ├── article-abstract-*.png   # 文獻摘要頁面
-        ├── article-methods-*.png    # Methods 章節
-        ├── article-results-*.png    # Results 關鍵數據
-        ├── forest-plot-*.png        # Forest Plot
-        ├── kaplan-meier-*.png       # KM 曲線
-        └── table-baseline-*.png     # Table 1
+└── 06_slides/                 # 簡報輸出
+    ├── slides.json            # 簡報資料（JSON）
+    └── ebm-report.pptx        # PowerPoint 檔案
 ```
 
 ## 實體腳本
@@ -100,7 +99,6 @@ projects/<name>/
 | `scripts/export_appraisal.py` | 將評讀 JSON 匯出為結構化 CSV |
 | `scripts/build_slide_outline.py` | 從專案檔案自動組裝 slides.json |
 | `scripts/generate_pptx.py` | python-pptx fallback 簡報產生器 |
-| `scripts/screenshot.py` | 截圖管理工具（初始化、列表、完整性檢查）|
 | `scripts/status.py` | 專案進度儀表板 |
 
 ## 品質門檻
@@ -132,14 +130,17 @@ projects/<name>/
 
 `projects/example-sglt2i-ckd/` — SGLT2i 在 CKD 合併糖尿病的完整 EBM 報告範例，展示每個步驟的結構化產出。
 
-## MCP 工具
+## 外部工具（MCP / API）
 
-本專案使用以下 MCP 工具：
-- **PubMed MCP** — search_articles, get_article_metadata, find_related_articles, get_full_text_article
-- **Playwright MCP** — Cochrane Library 網站搜尋
-- **Clinical Trials MCP** — ClinicalTrials.gov 進行中試驗搜尋
-- **Canva MCP** — 簡報產生
-- **ICD-10 MCP** — 輔助搜尋詞彙查詢
+本專案的技能指令支援以下外部工具，如不可用會自動 fallback 到 WebSearch / E-utilities API：
+
+- **PubMed** — 文獻搜尋、metadata 取得、全文取得
+- **Playwright** — Cochrane Library 網站搜尋
+- **Clinical Trials** — ClinicalTrials.gov 進行中試驗搜尋
+- **Canva** — 簡報產生
+- **ICD-10** — 輔助搜尋詞彙查詢
+
+各工具的 fallback 機制詳見 `skills/brainstorm.md` 和 `skills/lit-search.md`。
 
 ## 語言規則
 
@@ -179,7 +180,6 @@ ebm-report-pipeline/
 │   ├── build_slide_outline.py         # 自動組裝簡報大綱
 │   ├── generate_pptx.py              # PowerPoint 產生器
 │   ├── generate_platform_config.py    # 跨平台設定產生器
-│   ├── screenshot.py                  # 截圖管理工具
 │   └── status.py                      # 專案進度儀表板
 ├── data/                              # 參考資料（所有平台共用）
 │   ├── departments.md                 # 科別 MeSH 對照表

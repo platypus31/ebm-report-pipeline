@@ -21,21 +21,26 @@ pico:
     zh: ""        # 繁體中文 — 族群/問題描述
     mesh: ""      # PubMed MeSH: "Term"[MeSH] AND "Term"[MeSH]
     detail: ""    # 具體限定條件（年齡、共病、嚴重度）
+    keywords: []  # 臨床情境中對應的關鍵字，如 ["68 歲", "eGFR 38", "CKD 3b"]
   i:
     zh: ""        # 繁體中文 — 介入描述
     mesh: ""      # PubMed MeSH
     detail: ""    # 具體藥物/劑量/療程
+    keywords: []  # 臨床情境關鍵字，如 ["加入 SGLT2 抑制劑", "Dapagliflozin"]
   c:
     zh: ""        # 繁體中文 — 比較組描述
     mesh: ""      # PubMed MeSH
     detail: ""    # 安慰劑/標準治療/其他藥物
+    keywords: []  # 臨床情境關鍵字，如 ["已使用 Metformin", "ARB 最大劑量"]
   o:
     primary:
       zh: ""      # 繁體中文 — 主要結局
       mesh: ""    # PubMed MeSH
+      keywords: []  # 臨床情境關鍵字，如 ["腎功能惡化", "eGFR 下降"]
     secondary:
       zh: ""      # 繁體中文 — 次要結局
       mesh: ""    # PubMed MeSH
+      keywords: []  # 臨床情境關鍵字，如 ["蛋白尿", "UACR 850"]
 
 classification:
   type: ""        # therapeutic / preventive / diagnostic / prognostic / etiology_harm

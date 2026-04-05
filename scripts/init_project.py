@@ -21,6 +21,7 @@ STAGE_DIRS = [
     "04_apply",
     "05_audit",
     "06_slides",
+    "assets/screenshots",
 ]
 
 PICO_TEMPLATE = """\
@@ -43,19 +44,24 @@ pico:
   p:
     zh: ""
     mesh: ""
+    keywords: []
   i:
     zh: ""
     mesh: ""
+    keywords: []
   c:
     zh: ""
     mesh: ""
+    keywords: []
   o:
     primary:
       zh: ""
       mesh: ""
+      keywords: []
     secondary:
       zh: ""
       mesh: ""
+      keywords: []
 
 classification:
   type: ""          # therapeutic / preventive / diagnostic / prognostic / etiology_harm
@@ -112,9 +118,12 @@ README_TEMPLATE = """\
 │   └── clinical_reply.md
 ├── 05_audit/              # AUDIT — 自我評估
 │   └── self_assessment.md
-└── 06_slides/             # 簡報輸出
-    ├── slides.json
-    └── ebm-report.pptx
+├── 06_slides/             # 簡報輸出
+│   ├── slides.json
+│   └── ebm-report.pptx
+└── assets/                # 截圖與附件
+    └── screenshots/       # Playwright 自動截圖
+        └── screenshots.json
 ```
 """
 
@@ -150,6 +159,19 @@ def create_project(name: str, department: str = "") -> Path:
     # Write project README
     readme = README_TEMPLATE.format(name=name, date=today)
     (project_root / "README.md").write_text(readme, encoding="utf-8")
+
+    # Write screenshots.json manifest
+    import json
+
+    manifest = {
+        "project": name,
+        "created": today,
+        "screenshots": [],
+    }
+    (project_root / "assets" / "screenshots.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
 
     return project_root
 

@@ -142,8 +142,10 @@ def gate_acquire(project: Path) -> GateResult:
             r.check(len(selected) >= 1,
                     f"至少選定 {len(selected)} 篇文獻",
                     is_warning=(len(selected) == 0))
-        except Exception:
-            r.check(False, "candidates.csv 格式錯誤")
+        except (UnicodeDecodeError, csv.Error):
+            r.check(False, "candidates.csv 格式錯誤或編碼不正確")
+        except OSError as e:
+            r.check(False, f"candidates.csv 無法讀取：{e}")
     else:
         r.check(False, "candidates.csv 候選文獻列表不存在", is_warning=True)
 
@@ -195,8 +197,10 @@ def gate_appraise(project: Path) -> GateResult:
                     f"有 {with_evidence}/{total} 題附有文獻原文佐證",
                     is_warning=(with_evidence < total * 0.7))
 
-        except Exception:
-            r.check(False, "appraisal.csv 格式錯誤")
+        except (UnicodeDecodeError, csv.Error):
+            r.check(False, "appraisal.csv 格式錯誤或編碼不正確")
+        except OSError as e:
+            r.check(False, f"appraisal.csv 無法讀取：{e}")
     else:
         r.check(False, "appraisal.csv 評讀結果不存在")
 
