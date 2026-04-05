@@ -20,6 +20,11 @@ slides.json 格式：
             "subtitle": "副標題"
         },
         {
+            "type": "toc",
+            "title": "目錄",
+            "items": ["ASK 問題", "ACQUIRE 檢索", "APPRAISE 評讀", "APPLY 應用", "AUDIT 評估"]
+        },
+        {
             "type": "section",
             "title": "ASK",
             "subtitle": "問題"
@@ -45,6 +50,30 @@ slides.json 格式：
             "headers": ["欄1", "欄2", "欄3"],
             "rows": [["值1", "值2", "值3"]],
             "section": "ACQUIRE"
+        },
+        {
+            "type": "image",
+            "title": "截圖標題",
+            "image_path": "assets/screenshots/pubmed-search-1.png",
+            "caption": "PubMed 搜尋結果",
+            "section": "ACQUIRE"
+        },
+        {
+            "type": "image_content",
+            "title": "標題",
+            "image_path": "assets/screenshots/article-results-1.png",
+            "bullets": ["重點一", "重點二"],
+            "section": "APPRAISE"
+        },
+        {
+            "type": "appraisal",
+            "title": "Section A — Validity",
+            "questions": [
+                {"number": "Q1", "text": "問題文字", "answer": "Yes", "evidence": "佐證"},
+                {"number": "Q2", "text": "問題文字", "answer": "No", "evidence": "佐證"},
+                {"number": "Q3", "text": "問題文字", "answer": "Can't tell", "evidence": "佐證"}
+            ],
+            "section": "APPRAISE"
         }
     ]
 }
@@ -68,7 +97,10 @@ except ImportError:
 # ── Constants ──
 
 VALID_STYLES = ["formal", "clean", "teaching", "competition"]
-VALID_SLIDE_TYPES = ["title", "section", "content", "two_column", "table"]
+VALID_SLIDE_TYPES = [
+    "title", "section", "content", "two_column", "table",
+    "image", "image_content", "toc", "appraisal",
+]
 
 # ── Style definitions ──
 
@@ -105,6 +137,14 @@ STYLES = {
         "text": RGBColor(0x1A, 0x1A, 0x2E),
         "light": RGBColor(0xE8, 0xEA, 0xF6),
     },
+}
+
+# Appraisal answer colors
+ANSWER_COLORS = {
+    "Yes": RGBColor(0x27, 0xAE, 0x60),       # 綠色
+    "No": RGBColor(0xE7, 0x4C, 0x3C),         # 紅色
+    "Can't tell": RGBColor(0x95, 0xA5, 0xA6),  # 灰色
+    "N/A": RGBColor(0x7F, 0x8C, 0x8D),         # 深灰
 }
 
 SECTION_LABELS = {
@@ -180,10 +220,83 @@ def create_title_slide(prs, data, style_colors):
         lines.append(data["department"])
     if data.get("date"):
         lines.append(data["date"])
+    # Advisor support
+    if data.get("advisor"):
+        lines.append(f"指導老師：{data['advisor']}")
     p = tf2.paragraphs[0]
     p.text = " | ".join(lines)
     p.font.size = Pt(18)
     p.font.color.rgb = style_colors["secondary"]
+
+
+def create_toc_slide(prs, slide_data, style_colors):
+    """Create Table of Contents / 5A overview slide."""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+
+    # Title bar
+    _add_title_bar(slide, slide_data.get("title", "目錄 / 5A 流程"), Inches(0.8), style_colors)
+
+    items = slide_data.get("items", [
+        "ASK — 提出臨床問題",
+        "ACQUIRE — 搜尋最佳證據",
+        "APPRAISE — 嚴格評讀",
+        "APPLY — 應用到臨床",
+        "AUDIT — 自我評估",
+    ])
+
+    sections_5a = ["ASK", "ACQUIRE", "APPRAISE", "APPLY", "AUDIT"]
+    box_width = Inches(1.5)
+    box_height = Inches(1.2)
+    arrow_width = Inches(0.4)
+    total_width = len(sections_5a) * box_width + (len(sections_5a) - 1) * arrow_width
+    start_left = Inches((10 - total_width / Inches(1)) / 2)
+
+    # Draw 5A flow boxes
+    for i, sec in enumerate(sections_5a):
+        left = start_left + Emu(int((box_width + arrow_width) * i))
+        top = Inches(2.5)
+
+        # Box
+        shape = slide.shapes.add_shape(
+            MSO_SHAPE.ROUNDED_RECTANGLE,
+            left, top, box_width, box_height
+        )
+        shape.fill.solid()
+        shape.fill.fore_color.rgb = style_colors["primary"]
+        shape.line.fill.background()
+
+        tf = shape.text_frame
+        tf.word_wrap = True
+        p = tf.paragraphs[0]
+        p.text = sec
+        p.font.size = Pt(16)
+        p.font.bold = True
+        p.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+        p.alignment = PP_ALIGN.CENTER
+
+        # Arrow between boxes (except last)
+        if i < len(sections_5a) - 1:
+            arrow_left = left + box_width
+            arrow_top = top + Emu(int(box_height * 0.35))
+            arrow = slide.shapes.add_shape(
+                MSO_SHAPE.RIGHT_ARROW,
+                arrow_left, arrow_top, arrow_width, Emu(int(box_height * 0.3))
+            )
+            arrow.fill.solid()
+            arrow.fill.fore_color.rgb = style_colors["accent"]
+            arrow.line.fill.background()
+
+    # Items below
+    if items:
+        txBox = slide.shapes.add_textbox(Inches(1.5), Inches(4.5), Inches(7), Inches(2.5))
+        tf = txBox.text_frame
+        tf.word_wrap = True
+        for j, item in enumerate(items):
+            p = tf.paragraphs[0] if j == 0 else tf.add_paragraph()
+            p.text = f"  {item}"
+            p.font.size = Pt(14)
+            p.font.color.rgb = style_colors["text"]
+            p.space_after = Pt(6)
 
 
 def create_section_slide(prs, slide_data, style_colors):
@@ -363,6 +476,8 @@ def create_table_slide(prs, slide_data, style_colors):
     # Data rows
     for i, row in enumerate(rows_data):
         for j, val in enumerate(row):
+            if j >= n_cols:
+                break
             cell = table.cell(i + 1, j)
             cell.text = str(val)
             if i % 2 == 0:
@@ -371,6 +486,255 @@ def create_table_slide(prs, slide_data, style_colors):
             for paragraph in cell.text_frame.paragraphs:
                 paragraph.font.size = Pt(11)
                 paragraph.font.color.rgb = style_colors["text"]
+
+
+def create_image_slide(prs, slide_data, style_colors, project_dir=None):
+    """Create full-page image slide with title and optional caption."""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+
+    section = slide_data.get("section")
+    content_left = Inches(1.6) if section else Inches(0.5)
+
+    if section:
+        add_section_indicator(slide, section, style_colors)
+
+    _add_title_bar(slide, slide_data.get("title", ""), content_left, style_colors)
+
+    # Try to insert image
+    image_path = slide_data.get("image_path", "")
+    image_inserted = False
+
+    if image_path and project_dir:
+        full_path = Path(project_dir) / image_path
+        if full_path.exists():
+            img_left = content_left + Inches(0.3)
+            img_top = Inches(1.3)
+            img_width = Inches(7.0) if section else Inches(8.5)
+            img_height = Inches(5.0)
+            try:
+                slide.shapes.add_picture(
+                    str(full_path), img_left, img_top, img_width, img_height
+                )
+                image_inserted = True
+            except Exception:
+                pass
+
+    if not image_inserted:
+        # Placeholder box
+        ph_left = content_left + Inches(0.5)
+        ph_top = Inches(1.5)
+        ph_width = Inches(7.0) if section else Inches(8.5)
+        ph_height = Inches(4.5)
+
+        shape = slide.shapes.add_shape(
+            MSO_SHAPE.RECTANGLE, ph_left, ph_top, ph_width, ph_height
+        )
+        shape.fill.solid()
+        shape.fill.fore_color.rgb = style_colors["light"]
+        shape.line.color.rgb = style_colors["secondary"]
+
+        tf = shape.text_frame
+        tf.word_wrap = True
+        p = tf.paragraphs[0]
+        display_path = image_path or "（未指定圖片路徑）"
+        p.text = f"📷 {display_path}"
+        p.font.size = Pt(14)
+        p.font.color.rgb = style_colors["secondary"]
+        p.alignment = PP_ALIGN.CENTER
+
+    # Caption
+    caption = slide_data.get("caption", "")
+    if caption:
+        cap_box = slide.shapes.add_textbox(
+            content_left, Inches(6.5), Inches(8), Inches(0.6)
+        )
+        tf = cap_box.text_frame
+        p = tf.paragraphs[0]
+        p.text = caption
+        p.font.size = Pt(11)
+        p.font.italic = True
+        p.font.color.rgb = style_colors["secondary"]
+        p.alignment = PP_ALIGN.CENTER
+
+
+def create_image_content_slide(prs, slide_data, style_colors, project_dir=None):
+    """Create slide with image on left and bullet points on right."""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+
+    section = slide_data.get("section")
+    content_left = Inches(1.6) if section else Inches(0.5)
+
+    if section:
+        add_section_indicator(slide, section, style_colors)
+
+    _add_title_bar(slide, slide_data.get("title", ""), content_left, style_colors)
+
+    # Image area (left half)
+    img_width = Inches(4.0) if section else Inches(4.5)
+    image_path = slide_data.get("image_path", "")
+    image_inserted = False
+
+    if image_path and project_dir:
+        full_path = Path(project_dir) / image_path
+        if full_path.exists():
+            try:
+                slide.shapes.add_picture(
+                    str(full_path), content_left, Inches(1.3),
+                    img_width, Inches(5.0)
+                )
+                image_inserted = True
+            except Exception:
+                pass
+
+    if not image_inserted:
+        shape = slide.shapes.add_shape(
+            MSO_SHAPE.RECTANGLE,
+            content_left, Inches(1.3), img_width, Inches(5.0)
+        )
+        shape.fill.solid()
+        shape.fill.fore_color.rgb = style_colors["light"]
+        shape.line.color.rgb = style_colors["secondary"]
+        tf = shape.text_frame
+        tf.word_wrap = True
+        p = tf.paragraphs[0]
+        display_path = image_path or "（未指定圖片路徑）"
+        p.text = f"📷 {display_path}"
+        p.font.size = Pt(12)
+        p.font.color.rgb = style_colors["secondary"]
+        p.alignment = PP_ALIGN.CENTER
+
+    # Bullets area (right half)
+    bullets_left = content_left + img_width + Inches(0.3)
+    bullets_width = Inches(3.5) if section else Inches(4.2)
+    bullets = slide_data.get("bullets", [])
+
+    if bullets:
+        txBox = slide.shapes.add_textbox(
+            bullets_left, Inches(1.3), bullets_width, Inches(5.0)
+        )
+        tf = txBox.text_frame
+        tf.word_wrap = True
+        for i, bullet in enumerate(bullets):
+            p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+            p.text = f"  {bullet}"
+            p.font.size = Pt(14)
+            p.font.color.rgb = style_colors["text"]
+            p.space_after = Pt(6)
+
+
+def _get_answer_color(answer):
+    """Return color for appraisal answer."""
+    answer_lower = answer.strip().lower()
+    if answer_lower == "yes":
+        return ANSWER_COLORS["Yes"]
+    elif answer_lower == "no":
+        return ANSWER_COLORS["No"]
+    elif answer_lower in ("can't tell", "cant tell", "unclear"):
+        return ANSWER_COLORS["Can't tell"]
+    else:
+        return ANSWER_COLORS["N/A"]
+
+
+def create_appraisal_slide(prs, slide_data, style_colors):
+    """Create appraisal slide with color-coded answers."""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+
+    section = slide_data.get("section", "APPRAISE")
+    content_left = Inches(1.6) if section else Inches(0.5)
+
+    if section:
+        add_section_indicator(slide, section, style_colors)
+
+    _add_title_bar(slide, slide_data.get("title", ""), content_left, style_colors)
+
+    questions = slide_data.get("questions", [])
+    if not questions:
+        return
+
+    # Build table: number | question | answer | evidence
+    show_evidence = any(q.get("evidence") for q in questions)
+    if show_evidence:
+        headers = ["題號", "問題", "判定", "佐證"]
+        n_cols = 4
+        col_widths = [Inches(0.6), Inches(3.0), Inches(0.8), Inches(3.1)]
+    else:
+        headers = ["題號", "問題", "判定"]
+        n_cols = 3
+        col_widths = [Inches(0.7), Inches(4.5), Inches(1.0)]
+
+    n_rows = len(questions) + 1
+    table_width = sum(w for w in col_widths)
+    row_height = Inches(0.55)
+
+    table_shape = slide.shapes.add_table(
+        n_rows, n_cols,
+        content_left, Inches(1.2),
+        table_width, Emu(int(row_height * n_rows))
+    )
+    table = table_shape.table
+
+    # Set column widths
+    for j, w in enumerate(col_widths):
+        table.columns[j].width = w
+
+    # Header row
+    for j, header in enumerate(headers):
+        cell = table.cell(0, j)
+        cell.text = header
+        cell.fill.solid()
+        cell.fill.fore_color.rgb = style_colors["primary"]
+        for paragraph in cell.text_frame.paragraphs:
+            paragraph.font.size = Pt(11)
+            paragraph.font.bold = True
+            paragraph.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+            paragraph.alignment = PP_ALIGN.CENTER
+
+    # Data rows
+    for i, q in enumerate(questions):
+        answer = q.get("answer", "")
+        answer_color = _get_answer_color(answer)
+
+        # Number
+        cell_num = table.cell(i + 1, 0)
+        cell_num.text = q.get("number", f"Q{i + 1}")
+        for p in cell_num.text_frame.paragraphs:
+            p.font.size = Pt(10)
+            p.font.bold = True
+            p.font.color.rgb = style_colors["text"]
+            p.alignment = PP_ALIGN.CENTER
+
+        # Question text
+        cell_q = table.cell(i + 1, 1)
+        cell_q.text = q.get("text", "")
+        for p in cell_q.text_frame.paragraphs:
+            p.font.size = Pt(10)
+            p.font.color.rgb = style_colors["text"]
+
+        # Answer (color-coded)
+        cell_a = table.cell(i + 1, 2)
+        cell_a.text = answer
+        cell_a.fill.solid()
+        cell_a.fill.fore_color.rgb = answer_color
+        for p in cell_a.text_frame.paragraphs:
+            p.font.size = Pt(11)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+            p.alignment = PP_ALIGN.CENTER
+
+        # Evidence (if shown)
+        if show_evidence:
+            cell_e = table.cell(i + 1, 3)
+            cell_e.text = q.get("evidence", "")
+            for p in cell_e.text_frame.paragraphs:
+                p.font.size = Pt(9)
+                p.font.color.rgb = style_colors["text"]
+
+        # Alternating row color (except answer column)
+        if i % 2 == 0:
+            for j in [0, 1] + ([3] if show_evidence else []):
+                cell = table.cell(i + 1, j)
+                cell.fill.solid()
+                cell.fill.fore_color.rgb = style_colors["light"]
 
 
 def validate_data(data):
@@ -414,7 +778,7 @@ def validate_data(data):
             )
 
 
-def generate_pptx(data, output_path):
+def generate_pptx(data, output_path, project_dir=None):
     """Generate the PowerPoint file from structured data."""
     validate_data(data)
 
@@ -437,6 +801,8 @@ def generate_pptx(data, output_path):
 
         if slide_type == "title":
             create_title_slide(prs, {**data, **slide_data}, style_colors)
+        elif slide_type == "toc":
+            create_toc_slide(prs, slide_data, style_colors)
         elif slide_type == "section":
             create_section_slide(prs, slide_data, style_colors)
         elif slide_type == "content":
@@ -445,6 +811,12 @@ def generate_pptx(data, output_path):
             create_two_column_slide(prs, slide_data, style_colors)
         elif slide_type == "table":
             create_table_slide(prs, slide_data, style_colors)
+        elif slide_type == "image":
+            create_image_slide(prs, slide_data, style_colors, project_dir)
+        elif slide_type == "image_content":
+            create_image_content_slide(prs, slide_data, style_colors, project_dir)
+        elif slide_type == "appraisal":
+            create_appraisal_slide(prs, slide_data, style_colors)
         else:
             create_content_slide(prs, slide_data, style_colors)
 
@@ -461,16 +833,19 @@ def main():
         epilog=(
             "範例：\n"
             "  python3 generate_pptx.py slides.json output.pptx\n"
-            "  python3 generate_pptx.py slides.json ~/Desktop/ebm-report.pptx\n\n"
+            "  python3 generate_pptx.py slides.json ~/Desktop/ebm-report.pptx\n"
+            "  python3 generate_pptx.py slides.json output.pptx --project projects/my-topic\n\n"
             "JSON 格式說明：\n"
             "  必要欄位：title (字串), style (formal|clean|teaching|competition), slides (陣列)\n"
-            "  每張投影片的 type 可為：title, section, content, two_column, table\n"
+            "  每張投影片的 type 可為：title, toc, section, content, two_column, table,\n"
+            "                         image, image_content, appraisal\n"
             "  詳見 skills/ebm-slides.md 中的 JSON 範例。"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("input", help="輸入的 JSON 檔案路徑（簡報資料）")
     parser.add_argument("output", help="輸出的 .pptx 檔案路徑")
+    parser.add_argument("--project", help="專案目錄路徑（用於解析截圖圖片）")
 
     args = parser.parse_args()
     input_path = args.input
@@ -495,7 +870,7 @@ def main():
 
     # Validate and generate
     try:
-        generate_pptx(data, output_path)
+        generate_pptx(data, output_path, project_dir=args.project)
     except ValueError as e:
         print(f"錯誤：輸入資料驗證失敗。{e}", file=sys.stderr)
         sys.exit(1)
