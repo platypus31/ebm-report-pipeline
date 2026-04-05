@@ -94,12 +94,21 @@ def extract_table_data(md_content: str) -> tuple[list[str], list[list[str]]]:
     return headers, rows
 
 
-def extract_paragraphs(md_content: str, max_chars: int = 300) -> list[str]:
-    """Extract non-header paragraphs as narrative text."""
+def extract_paragraphs(md_content: str) -> list[str]:
+    """Extract non-header paragraphs as narrative text, joining continuation lines."""
     paragraphs = []
     current = []
+    in_code = False
     for line in md_content.split("\n"):
         stripped = line.strip()
+        if stripped.startswith("```"):
+            in_code = not in_code
+            if current:
+                paragraphs.append(" ".join(current))
+                current = []
+            continue
+        if in_code:
+            continue
         if stripped.startswith("#") or stripped.startswith("| ") or stripped.startswith("|-"):
             if current:
                 paragraphs.append(" ".join(current))
@@ -109,11 +118,33 @@ def extract_paragraphs(md_content: str, max_chars: int = 300) -> list[str]:
             if current:
                 paragraphs.append(" ".join(current))
                 current = []
-        elif not stripped.startswith("- ") and not stripped.startswith("* ") and not stripped.startswith("```"):
+        elif stripped.startswith("- ") or stripped.startswith("* ") or stripped.startswith("["):
+            if current:
+                paragraphs.append(" ".join(current))
+                current = []
+        else:
             current.append(stripped)
     if current:
         paragraphs.append(" ".join(current))
     return [p for p in paragraphs if len(p) > 10]
+
+
+def extract_md_sections(md_content: str) -> list[tuple[str, str]]:
+    """Split markdown by ## headers. Returns [(title, body), ...]."""
+    sections = []
+    current_title = ""
+    current_lines = []
+    for line in md_content.split("\n"):
+        if line.strip().startswith("## "):
+            if current_title or current_lines:
+                sections.append((current_title, "\n".join(current_lines)))
+            current_title = line.strip().lstrip("#").strip()
+            current_lines = []
+        else:
+            current_lines.append(line)
+    if current_title or current_lines:
+        sections.append((current_title, "\n".join(current_lines)))
+    return sections
 
 
 def find_screenshots(project: Path, stage: str = None, category: str = None) -> list[dict]:
@@ -214,119 +245,134 @@ def parse_pico_yaml(ask_dir: Path) -> dict:
 # ── Section builders ──
 
 def build_ask_slides(project: Path, pico_content: str) -> list[dict]:
-    """Build ASK section slides (8-12 slides)."""
+    """Build ASK section slides (8-12 slides).
+
+    Flow: 臨床場景(narrative) → 檢驗數據 → Introduction(per section) →
+          問題分類 → PICO table
+    """
     ask_dir = project / "01_ask"
     slides = []
 
     slides.append({"type": "section", "title": "ASK", "subtitle": "問題"})
 
-    # 1. Clinical scenario as narrative (full text, not just bullets)
+    # ── 1. Clinical scenario: 200-300字 narrative essay ──
     scenario = read_md(ask_dir / "clinical_scenario.md")
     if scenario:
-        # First slide: patient narrative
-        paras = extract_paragraphs(scenario)
-        # Combine into narrative bullets (each paragraph = 1 bullet)
-        narrative = []
-        for p in paras:
-            if len(p) > 10:
-                narrative.append(p)
-        if narrative:
-            # Split across slides if too long
-            for i in range(0, len(narrative), 3):
-                chunk = narrative[i:i+3]
-                suffix = f" ({i//3 + 1}/{(len(narrative)-1)//3 + 1})" if len(narrative) > 3 else ""
-                slides.append({
-                    "type": "content",
-                    "title": f"臨床場景{suffix}",
-                    "bullets": chunk,
-                    "section": "ASK",
-                })
+        sections = extract_md_sections(scenario)
+        # Combine all narrative paragraphs into a story
+        narrative_parts = []
+        lab_table = None
+        for title, body in sections:
+            # Lab data table → separate slide
+            h, r = extract_table_data(body)
+            if h and r:
+                lab_table = (h, r)
+                continue
+            # Skip empty or reference sections
+            if "參考" in title:
+                continue
+            paras = extract_paragraphs(body)
+            for p in paras:
+                narrative_parts.append(p)
 
-        # Lab data table if present
-        h, r = extract_table_data(scenario)
-        if h and r:
+        # Slide 1: patient narrative (combine into 2-3 substantial bullets)
+        if narrative_parts:
+            slides.append({
+                "type": "content",
+                "title": "臨床場景",
+                "bullets": narrative_parts[:4],
+                "section": "ASK",
+            })
+
+        # Slide 2: medications (extract bullet list from scenario)
+        meds = extract_bullets(scenario)
+        if meds:
+            slides.append({
+                "type": "content",
+                "title": "現行治療",
+                "bullets": meds,
+                "section": "ASK",
+            })
+
+        # Slide 3: lab data table
+        if lab_table:
             slides.append({
                 "type": "table",
                 "title": "最新檢驗數據",
-                "headers": h,
-                "rows": r,
+                "headers": lab_table[0],
+                "rows": lab_table[1],
                 "section": "ASK",
             })
 
-    # 2. Background / Introduction (split into multiple slides)
+    # ── 2. Introduction / Background (one slide per ## section) ──
     intro = read_md(ask_dir / "introduction.md")
     if intro:
-        # Extract section-by-section
-        current_title = "背景資訊"
-        current_bullets = []
-        for line in intro.split("\n"):
-            stripped = line.strip()
-            if stripped.startswith("## "):
-                if current_bullets:
-                    slides.append({
-                        "type": "content",
-                        "title": current_title,
-                        "bullets": current_bullets[:5],
-                        "section": "ASK",
-                    })
-                    current_bullets = []
-                current_title = stripped.lstrip("#").strip()
-            elif stripped.startswith("- ") or stripped.startswith("* "):
-                current_bullets.append(stripped[2:].strip())
-            elif stripped and not stripped.startswith("#") and not stripped.startswith("|") and not stripped.startswith("```") and len(stripped) > 15:
-                current_bullets.append(stripped)
-        if current_bullets:
-            slides.append({
-                "type": "content",
-                "title": current_title,
-                "bullets": current_bullets[:5],
-                "section": "ASK",
-            })
-
-    # 3. Classification / Clinical Question
-    classify = read_md(ask_dir / "classification.md")
-    if classify:
-        bullets = []
-        for line in classify.split("\n"):
-            s = line.strip()
-            if s.startswith("**") and s.endswith("**"):
-                bullets.append(s.strip("*").strip())
-            elif s.startswith("- ") and "首選" in s or "替代" in s:
-                bullets.append(s[2:].strip())
-            elif "治療型" in s or "診斷型" in s or "預後型" in s or "預防型" in s or "病因" in s:
-                if not s.startswith("#"):
-                    bullets.append(s)
-        # Add reasoning
-        for line in classify.split("\n"):
-            s = line.strip()
-            if s.startswith("1.") or s.startswith("2.") or s.startswith("3."):
-                bullets.append(s)
-        if bullets:
-            slides.append({
-                "type": "content",
-                "title": "臨床問題分類",
-                "bullets": bullets[:6],
-                "section": "ASK",
-            })
-
-        # Best evidence hierarchy
-        h, r = extract_table_data(classify)
-        if not h:
-            # Build from numbered list
-            ev_bullets = []
-            for line in classify.split("\n"):
-                s = line.strip()
-                if re.match(r'^\d+\.', s):
-                    ev_bullets.append(s)
-            if ev_bullets:
+        sections = extract_md_sections(intro)
+        for title, body in sections:
+            if not title or "參考" in title:
+                continue
+            paras = extract_paragraphs(body)
+            if paras:
+                # Each paragraph = 1 bullet, max 3 per slide for readability
                 slides.append({
                     "type": "content",
-                    "title": "最佳證據層級",
-                    "bullets": ev_bullets[:5],
+                    "title": title,
+                    "bullets": paras[:3],
                     "section": "ASK",
                 })
 
-    # 4. PICO as table with keywords
+    # ── 3. Question classification ──
+    classify = read_md(ask_dir / "classification.md")
+    if classify:
+        sections = extract_md_sections(classify)
+
+        # Main classification slide
+        class_bullets = []
+        for title, body in sections:
+            if "類型" in title:
+                paras = extract_paragraphs(body)
+                for p in paras:
+                    class_bullets.append(p)
+            elif "推理" in title:
+                # Numbered reasoning steps
+                for line in body.split("\n"):
+                    s = line.strip()
+                    if re.match(r'^\d+\.', s):
+                        class_bullets.append(s)
+
+        if class_bullets:
+            slides.append({
+                "type": "content",
+                "title": "臨床問題分類",
+                "bullets": class_bullets[:5],
+                "section": "ASK",
+            })
+
+        # Evidence hierarchy + appraisal tool
+        ev_bullets = []
+        tool_bullets = []
+        for title, body in sections:
+            if "證據" in title or "層級" in title:
+                for line in body.split("\n"):
+                    s = line.strip()
+                    if re.match(r'^\d+\.', s):
+                        ev_bullets.append(s)
+            elif "評讀" in title or "工具" in title:
+                tool_bullets = extract_bullets(body)
+
+        if ev_bullets:
+            combined = ev_bullets[:5]
+            if tool_bullets:
+                combined.append("---")
+                combined.extend(tool_bullets[:2])
+            slides.append({
+                "type": "content",
+                "title": "最佳證據層級與評讀工具",
+                "bullets": combined,
+                "section": "ASK",
+            })
+
+    # ── 4. PICO as table (keywords from clinical scenario) ──
     pico_data = parse_pico_yaml(ask_dir)
     pico_section = pico_data.get("pico", {})
     if pico_section:
@@ -340,7 +386,7 @@ def build_ask_slides(project: Path, pico_content: str) -> list[dict]:
                 kw = ", ".join(d.get("keywords", []))
                 mesh = d.get("mesh", "")
                 if zh:
-                    rows.append([label, zh, kw, mesh[:40]])
+                    rows.append([label, zh, kw, mesh[:50]])
         # Outcome
         o_data = pico_section.get("o", {})
         if isinstance(o_data, dict):
@@ -354,29 +400,13 @@ def build_ask_slides(project: Path, pico_content: str) -> list[dict]:
                 kw = ""
                 mesh = ""
             if zh:
-                rows.append(["O (Outcome)", zh, kw, mesh[:40] if mesh else ""])
+                rows.append(["O (Outcome)", zh, kw, mesh[:50] if mesh else ""])
         if rows:
             slides.append({
                 "type": "table",
                 "title": "PICO 分析",
                 "headers": headers,
                 "rows": rows,
-                "section": "ASK",
-            })
-    else:
-        # Fallback: bullets
-        pico_bullets = []
-        for line in pico_content.split("\n"):
-            s = line.strip()
-            if s.startswith("zh:"):
-                val = s.split(":", 1)[1].strip().strip('"').strip("'")
-                if val:
-                    pico_bullets.append(val)
-        if pico_bullets:
-            slides.append({
-                "type": "content",
-                "title": "PICO 分析",
-                "bullets": pico_bullets[:4],
                 "section": "ASK",
             })
 
